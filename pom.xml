@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.emergent</groupId>
+  <artifactId>emergent-parent</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <prerequisites>
+    <maven>3.0.3</maven>
+  </prerequisites>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <emergent.releases.repo.url>http://repo.emergent.org/nexus/content/repositories/releases</emergent.releases.repo.url>
+    <emergent.releases.dist.url>http://repo.emergent.org/nexus/content/repositories/releases</emergent.releases.dist.url>
+    <emergent.snapshots.repo.url>http://repo.emergent.org/nexus/content/repositories/snapshots</emergent.snapshots.repo.url>
+    <emergent.snapshots.dist.url>http://repo.emergent.org/nexus/content/repositories/snapshots</emergent.snapshots.dist.url>
+    <emergent.snapshots.dist.name>Emergent Development Snapshot Repository</emergent.snapshots.dist.name>
+  </properties>
+
+  <repositories>
+    <!--
+    <repository>
+      <id>emergent.releases</id>
+      <name>Emergent Release Repository</name>
+      <url>${emergent.releases.repo.url}</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    -->
+    <repository>
+      <id>emergent.snapshots</id>
+      <name>Emergent Snapshot Repository</name>
+      <url>${emergent.snapshots.repo.url}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <!-- Site omitted - each project must provide their own -->
+    <repository>
+      <id>emergent.releases.dist</id>
+      <name>Emergent Release Distribution Repository</name>
+      <url>${emergent.releases.dist.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>emergent.snapshots.dist</id>
+      <name>${emergent.snapshot.dist.name}</name>
+      <url>${emergent.snapshots.dist.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git@github.com:emergentdotorg/emergent-parent.git</connection>
+    <developerConnection>scm:git:git@github.com:emergentdotorg/emergent-parent.git</developerConnection>
+    <url>scm:git:git@github.com:emergentdotorg/emergent-parent.git</url>
+  </scm>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.3.2</version>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

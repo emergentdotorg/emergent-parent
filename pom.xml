@@ -200,7 +200,6 @@
           <configuration>
             <goals>deploy</goals>
             <autoVersionSubmodules>true</autoVersionSubmodules>
-            <useReleaseProfile>false</useReleaseProfile>
             <releaseProfiles>emergent-release</releaseProfiles>
           </configuration>
         </plugin>

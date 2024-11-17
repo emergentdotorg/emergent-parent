@@ -7,6 +7,11 @@ on:
         description: 'Next Release Version'
       next-snapshot-version:
         description: 'Next Snapshot Version'
+      dry-run:
+        description: 'Dry-run'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   call-workflow:
@@ -15,4 +20,5 @@ jobs:
       java-version: '8'
       next-release-version: ${{ inputs.next-release-version }}
       next-snapshot-version: ${{ inputs.next-snapshot-version }}
+      dry-run: ${{ inputs.dry-run }}
     secrets: inherit

@@ -10,9 +10,12 @@
 
   <name>The Emergent.org Group</name>
   <url>https://github.com/emergentdotorg</url>
+  <description>
+    The Emergent.org parent POM provides a means standardized configuration across other projects under the umbrella.
+  </description>
   <organization>
-    <name>The Emergent.org Group Foundation</name>
-    <url>https://www.emergent.org/</url>
+    <name>The Emergent.org Group</name>
+    <url>https://emergent.org/</url>
   </organization>
 
   <licenses>
@@ -22,6 +25,15 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <name>Patrick Woodworth</name>
+      <email>patrick@woodworth.org</email>
+      <organization>Emergent.org</organization>
+      <organizationUrl>https://emergent.org</organizationUrl>
+    </developer>
+  </developers>
 
   <scm>
     <connection>scm:git:git://github.com/emergentdotorg/maven-emergent-parent.git</connection>

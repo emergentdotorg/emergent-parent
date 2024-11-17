@@ -17,7 +17,6 @@ jobs:
       - name: Perform Maven Release
         uses: emergentdotorg/github-actions/maven-release@main
         with:
-          dry-run: false
           java-version: '8'
           next-release-version: ${{ inputs.next-release-version }}
           next-snapshot-version: ${{ inputs.next-snapshot-version }}

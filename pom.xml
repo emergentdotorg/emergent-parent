@@ -8,13 +8,13 @@
   <version>4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>The Emergent.org Group</name>
+  <name>Emergent.org</name>
   <url>https://github.com/emergentdotorg</url>
   <description>
-    The Emergent.org parent POM provides a means standardized configuration across other projects under the umbrella.
+    The Emergent.org parent POM provides a standardized configuration across other projects under the umbrella.
   </description>
   <organization>
-    <name>The Emergent.org Group</name>
+    <name>Emergent.org</name>
     <url>https://emergent.org/</url>
   </organization>
 
@@ -43,17 +43,11 @@
   </scm>
 
   <properties>
-    <distMgmtReleasesId>central</distMgmtReleasesId>
+    <maven.compiler.target>8</maven.compiler.target>
+    <maven.compiler.source>${maven.compiler.target}</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
-    <gpg.useagent>true</gpg.useagent>
-    <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
-    <minimalJavaBuildVersion>${maven.compiler.target}</minimalJavaBuildVersion>
-    <maven.compiler.source>${maven.compiler.target}</maven.compiler.source>
-    <maven.compiler.target>8</maven.compiler.target>
     <surefire.version>3.3.0</surefire.version>
-    <assembly.tarLongFileMode>posix</assembly.tarLongFileMode>
     <version.maven-antrun-plugin>3.1.0</version.maven-antrun-plugin>
     <version.maven-assembly-plugin>3.7.1</version.maven-assembly-plugin>
     <version.maven-clean-plugin>3.4.0</version.maven-clean-plugin>
@@ -80,7 +74,6 @@
     <version.maven-source-plugin>3.3.1</version.maven-source-plugin>
     <version.maven-surefire>${surefire.version}</version.maven-surefire>
     <version.maven-war-plugin>3.4.0</version.maven-war-plugin>
-    <version.central-publishing-maven-plugin>0.6.0</version.central-publishing-maven-plugin>
   </properties>
 
   <build>
@@ -140,12 +133,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
           <version>${version.maven-gpg-plugin}</version>
-          <configuration>
-            <gpgArguments>
-              <arg>--pinentry-mode</arg>
-              <arg>loopback</arg>
-            </gpgArguments>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -166,22 +153,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${version.maven-jar-plugin}</version>
-          <configuration>
-            <archive>
-              <manifest>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              </manifest>
-            </archive>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${version.maven-javadoc-plugin}</version>
-          <configuration>
-            <notimestamp>true</notimestamp>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -197,11 +173,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <version>${version.maven-release-plugin}</version>
-          <configuration>
-            <goals>deploy</goals>
-            <autoVersionSubmodules>true</autoVersionSubmodules>
-            <releaseProfiles>emergent-release</releaseProfiles>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -248,59 +219,54 @@
           <artifactId>maven-shade-plugin</artifactId>
           <version>${version.maven-shade-plugin}</version>
         </plugin>
-        <plugin>
-          <groupId>org.sonatype.central</groupId>
-          <artifactId>central-publishing-maven-plugin</artifactId>
-          <version>${version.central-publishing-maven-plugin}</version>
-          <extensions>true</extensions>
-          <configuration>
-            <publishingServerId>${distMgmtReleasesId}</publishingServerId>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
-
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-maven-version</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireMavenVersion>
-                  <version>${minimalMavenBuildVersion}</version>
-                </requireMavenVersion>
-              </rules>
-            </configuration>
-          </execution>
-          <execution>
-            <id>enforce-java-version</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireJavaVersion>
-                  <version>${minimalJavaBuildVersion}</version>
-                </requireJavaVersion>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
   </build>
 
   <profiles>
     <profile>
       <id>emergent-release</id>
+      <properties>
+        <distMgmtReleasesId>central</distMgmtReleasesId>
+        <minimalJavaBuildVersion>${maven.compiler.target}</minimalJavaBuildVersion>
+        <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
+        <assembly.tarLongFileMode>posix</assembly.tarLongFileMode>
+        <gpg.useagent>true</gpg.useagent>
+      </properties>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-maven-version</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireMavenVersion>
+                      <version>${minimalMavenBuildVersion}</version>
+                    </requireMavenVersion>
+                  </rules>
+                </configuration>
+              </execution>
+              <execution>
+                <id>enforce-java-version</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireJavaVersion>
+                      <version>${minimalJavaBuildVersion}</version>
+                    </requireJavaVersion>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
@@ -316,6 +282,9 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <notimestamp>true</notimestamp>
+            </configuration>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -327,6 +296,18 @@
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                </manifest>
+              </archive>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <executions>
               <execution>
@@ -334,12 +315,32 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
               </execution>
             </executions>
           </plugin>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <configuration>
+              <goals>deploy</goals>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <releaseProfiles>emergent-release</releaseProfiles>
+            </configuration>
+          </plugin>
+          <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.6.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>${distMgmtReleasesId}</publishingServerId>
+            </configuration>
           </plugin>
         </plugins>
       </build>

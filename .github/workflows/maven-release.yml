@@ -15,7 +15,7 @@ on:
 
 jobs:
   call-workflow:
-    uses: emergentdotorg/github-actions/.github/workflows/reusable-maven-release.yml@main
+    uses: emergentdotorg/github-actions/.github/workflows/reusable-maven-release.yml@1
     with:
       java-version: '8'
       next-release-version: ${{ inputs.next-release-version }}

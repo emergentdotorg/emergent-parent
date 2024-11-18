@@ -2,17 +2,20 @@ name: Maven Release
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      - master
+    inputs:
+      dry-run:
+        description: 'Dry-run without commits or deploys'
+        type: boolean
+        required: false
+        default: true
 
 jobs:
   invoke-release:
-    uses: ./.github/workflows/reusable-maven-release.yml
+    uses: emergentdotorg/github-actions/.github/workflows/reusable-maven-release.yml@main
     secrets: inherit
     with:
       java-version: '8'
+      dry-run: ${{ inputs.dry-run }}
 
   process-results:
     runs-on: ubuntu-latest

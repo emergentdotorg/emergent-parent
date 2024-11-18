@@ -330,6 +330,7 @@
             <configuration>
               <goals>deploy</goals>
               <autoVersionSubmodules>true</autoVersionSubmodules>
+              <preparationProfiles>emergent-release</preparationProfiles>
               <releaseProfiles>emergent-release</releaseProfiles>
             </configuration>
           </plugin>

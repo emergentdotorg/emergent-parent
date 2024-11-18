@@ -1,0 +1,141 @@
+name: Reusable Maven Release
+
+on:
+  workflow_call:
+    # Map the workflow outputs to job outputs
+    outputs:
+      version:
+        description: "The new release version"
+        value: ${{ jobs.release.outputs.version }}
+    inputs:
+      java-version:
+        description: 'JDK version to build with'
+        type: string
+        required: true
+      deploy-server:
+        description: 'Deployment server id'
+        type: string
+        required: false
+        default: central
+      scm-comment-prefix:
+        description: 'SCM Comment Prefix'
+        type: string
+        required: false
+        default: '[GitHub] '
+      tag-name-format:
+        description: 'Tag Name Format'
+        type: string
+        required: false
+        default: '@{project.version}'
+      next-release-version:
+        description: 'Next Release Version'
+        type: string
+        required: false
+        default: ''
+      next-snapshot-version:
+        description: 'Next Snapshot Version'
+        type: string
+        required: false
+        default: ''
+      dry-run:
+        description: 'Skip actually committing or deploying'
+        type: boolean
+        required: false
+        default: false
+
+env:
+  DEPLOY_USERNAME: ${{ secrets.maven_central_actor }}
+  DEPLOY_PASSWORD: ${{ secrets.maven_central_token }}
+  GPG_PASSPHRASE: ${{ secrets.maven_gpg_passphrase }}
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    # Map the job outputs to step outputs
+    outputs:
+      output1: ${{ steps.copy-version-info.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v4
+        with:
+          java-version: |
+            17
+            11
+            8
+            ${{ inputs.java-version }}
+          distribution: 'temurin'
+          # settings-path: ${{ github.workspace }}
+          server-id: ${{ inputs.deploy-server }}
+          server-username: DEPLOY_USERNAME
+          server-password: DEPLOY_PASSWORD
+          gpg-passphrase: GPG_PASSPHRASE
+          gpg-private-key: ${{ secrets.maven_gpg_private_key }}
+
+      - name: 'Verify Java environment variables'
+        shell: bash
+        run: |
+          java -version
+          echo "JAVA_HOME: $JAVA_HOME"
+          echo "JAVA_HOME_8_X64: $JAVA_HOME_8_X64"
+          echo "JAVA_HOME_11_X64: $JAVA_HOME_11_X64"
+          echo "JAVA_HOME_17_X64: $JAVA_HOME_17_X64"
+
+      - name: 'Configure Git User'
+        shell: bash
+        # language="shell script"
+        run: |
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.9
+
+      - name: Copy Version Info
+        id: copy-version-info
+        shell: bash
+        # language="shell script"
+        run: |
+          version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed 's/-SNAPSHOT//')
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Set Perform Goals
+        id: set-perform-goals
+        if: ${{ ! inputs.dry-run }}
+        shell: bash
+        # language="shell script"
+        run: |
+          echo "goals=release:perform" >> $GITHUB_OUTPUT          
+
+      - name: Perform Maven Release
+        shell: bash
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          SCM_COMMENT_PREFIX: ${{ inputs.scm-comment-prefix }}
+          TAG_NAME_FORMAT: ${{ inputs.tag-name-format }}
+          NEXT_REL_VERSION: ${{ inputs.next-release-version }}
+          NEXT_DEV_VERSION: ${{ inputs.next-snapshot-version }}
+          MVN_PERFORM_GOALS: ${{ steps.set-perform-goals.outputs.goals }}
+        # language="shell script"
+        run: |
+          declare -a mvnArgsArr=( "-B" )
+          mvnArgsArr+=( "--no-transfer-progress" )
+          mvnArgsArr+=( "-DpushChanges=false" )
+          mvnArgsArr+=( "-DlocalCheckout=true" )
+          mvnArgsArr+=( "-DscmCommentPrefix=[GitHub] " )
+          mvnArgsArr+=( "-Darguments=--no-transfer-progress" )
+          mvnArgsArr+=( "-DscmCommentPrefix=${SCM_COMMENT_PREFIX}" )
+          mvnArgsArr+=( "-DtagNameFormat=${TAG_NAME_FORMAT}" )
+          if [ -n "${NEXT_REL_VERSION}" ] ; then mvnArgsArr+=( "-DreleaseVersion=${NEXT_REL_VERSION}" ) ; fi
+          if [ -n "${NEXT_DEV_VERSION}" ] ; then mvnArgsArr+=( "-DdevelopmentVersion=${NEXT_DEV_VERSION}" ) ; fi
+          echo "" # mvnArgsArr+=( "-s" "${GITHUB_WORKSPACE}/settings.xml" )
+          mvnArgsArr+=( "-P" "emergent-release" )
+          mvn "${mvnArgsArr[@]}" release:prepare ${MVN_PERFORM_GOALS}
+
+      - name: Commit Maven Release
+        if: ${{ ! inputs.dry-run && success() }}
+        shell: bash
+        # language="shell script"
+        run: git push --follow-tags --atomic

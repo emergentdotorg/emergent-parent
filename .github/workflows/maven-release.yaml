@@ -3,6 +3,14 @@ name: Maven Release
 on:
   workflow_dispatch:
     inputs:
+      server-id:
+        description: 'Distribution server-id'
+        type: choice
+        required: false
+        default: central
+        options:
+          - central
+          - github
       dry-run:
         description: 'Dry-run without commits or deploys'
         type: boolean
@@ -11,10 +19,11 @@ on:
 
 jobs:
   invoke-release:
-    uses: emergentdotorg/github-actions/.github/workflows/reusable-maven-release.yml@main
+    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@v1
     secrets: inherit
     with:
       java-version: '8'
+      server-id: ${{ inputs.server-id }}
       dry-run: ${{ inputs.dry-run }}
 
   process-results:

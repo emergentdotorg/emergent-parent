@@ -11,6 +11,11 @@ on:
         options:
           - central
           - github
+      maven-push-changes:
+        description: 'Push commits during the maven release goal execution'
+        type: boolean
+        required: false
+        default: false
       dry-run:
         description: 'Dry-run without commits or deploys'
         type: boolean
@@ -24,6 +29,7 @@ jobs:
     with:
       java-version: '8'
       server-id: ${{ inputs.server-id }}
+      maven-push-changes: ${{ inputs.maven-push-changes }}
       dry-run: ${{ inputs.dry-run }}
 
   process-results:

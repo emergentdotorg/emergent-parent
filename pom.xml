@@ -5,7 +5,7 @@
 
   <groupId>org.emergent</groupId>
   <artifactId>emergent</artifactId>
-  <version>9-SNAPSHOT</version>
+  <version>9</version>
   <packaging>pom</packaging>
 
   <name>Emergent.org</name>
@@ -38,7 +38,7 @@
   <scm>
     <connection>scm:git:https://github.com/emergentdotorg/maven-emergent-parent.git</connection>
     <url>https://github.com/emergentdotorg/maven-emergent-parent/tree/${project.scm.tag}</url>
-    <tag>HEAD</tag>
+    <tag>9</tag>
   </scm>
 
   <properties>

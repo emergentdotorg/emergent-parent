@@ -251,8 +251,6 @@
       <properties>
         <minimalJavaBuildVersion>${maven.compiler.target}</minimalJavaBuildVersion>
         <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
-        <assembly.tarLongFileMode>posix</assembly.tarLongFileMode>
-        <gpg.useagent>true</gpg.useagent>
       </properties>
       <build>
         <plugins>
@@ -332,15 +330,16 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <executions>
               <execution>
-                <id>sign-release-artifacts</id>
+                <id>sign-artifacts</id>
                 <goals>
                   <goal>sign</goal>
                 </goals>
                 <configuration>
-                  <gpgArguments>
-                    <arg>--pinentry-mode</arg>
-                    <arg>loopback</arg>
-                  </gpgArguments>
+                  <!-- Requires the following
+                  MAVEN_GPG_PASSPHRASE: ${{ secrets.RELEASES_GPG_PASSPHRASE }}
+                  MAVEN_GPG_KEY: ${{ secrets.RELEASES_GPG_PRIVATE_KEY }}
+                  -->
+                  <signer>bc</signer>
                 </configuration>
               </execution>
             </executions>

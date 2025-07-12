@@ -24,7 +24,7 @@ on:
 
 jobs:
   invoke-release:
-    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@v1
+    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@v2
     secrets: inherit
     with:
       java-version: '8'

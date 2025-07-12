@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    uses: emergentdotorg/github-actions/.github/workflows/maven-verify.yaml@v1
+    uses: emergentdotorg/github-actions/.github/workflows/maven-verify.yaml@v2
     secrets: inherit
     with:
       java-version: '8'

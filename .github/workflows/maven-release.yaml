@@ -3,15 +3,17 @@ name: Maven Release
 on:
   workflow_dispatch:
     inputs:
-      server-id:
+      deploy-server:
         description: 'Distribution server-id'
         type: choice
         required: false
-        default: central
+        default: emergent-nexus
         options:
           - central
           - github
-      maven-push-changes:
+          - emergent-github
+          - emergent-nexus
+      push-changes:
         description: 'Push commits during the maven release goal execution'
         type: boolean
         required: false
@@ -24,12 +26,12 @@ on:
 
 jobs:
   invoke-release:
-    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@main
+    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@v3
     secrets: inherit
     with:
       java-version: '8'
-      server-id: ${{ inputs.server-id }}
-      maven-push-changes: ${{ inputs.maven-push-changes }}
+      deploy-server: ${{ inputs.deploy-server }}
+      push-changes: ${{ inputs.push-changes }}
       dry-run: ${{ inputs.dry-run }}
 
   process-results:

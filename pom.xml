@@ -231,13 +231,11 @@
   <profiles>
     <profile>
       <id>central-dist</id>
-      <!--
       <activation>
         <property>
-          <name>!altDeploymentRepository</name>
+          <name>publishingServerId</name>
         </property>
       </activation>
-      -->
       <build>
         <plugins>
           <plugin>

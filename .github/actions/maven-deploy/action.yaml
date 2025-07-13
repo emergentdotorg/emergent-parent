@@ -102,14 +102,15 @@ runs:
       shell: bash
       # language="shell script"
       run: |
-        declare -a _args=( "--batch-mode" "-e" )
-        _args+=( "-DdeployAtEnd=true" )
+        declare -a _args=( "-e" )
+        _args+=( "--batch-mode" )
+        _args+=( "--no-transfer-progress" )
         if [ -n "${DEPLOY_SERVER}" ]; then
           if [ -n "${DEPLOY_RELEASE_URL}" ]; then
             _args+=( "-DaltReleaseDeploymentRepository=${DEPLOY_SERVER}::${DEPLOY_RELEASE_URL}" )
           fi
           if [ -n "${DEPLOY_SNAPSHOT_URL}" ]; then
-            _args+=( "-DaltReleaseDeploymentRepository=${DEPLOY_SERVER}::${DEPLOY_SNAPSHOT_URL}" )
+            _args+=( "-DaltSnapshotDeploymentRepository=${DEPLOY_SERVER}::${DEPLOY_SNAPSHOT_URL}" )
           fi
         fi
         if [ -n "${MAVEN_PROFILES}" ]; then

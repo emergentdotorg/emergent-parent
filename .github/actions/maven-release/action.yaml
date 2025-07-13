@@ -51,6 +51,7 @@ runs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
+        fetch-depth: 0
         fetch-tags: true
 
     - name: Setup Git User
@@ -111,6 +112,7 @@ runs:
         fi
         VERSION="$(mvn ${_args[*]} help:evaluate -q -DforceStdout -Dexpression=project.version)"
         #VERSION="${VERSION%-SNAPSHOT}"
+        echo "VERSION=${VERSION}"
         printf '%s\n' \
           "profiles=${PROFILES_CSV}" \
           "version=${VERSION}" \

@@ -23,7 +23,7 @@ on:
       tag-bump:
         description: 'Tag bump, e.g. patch, etc.'
         type: string
-        default: ''
+        default: 'patch'
 
 jobs:
   release:

@@ -145,14 +145,9 @@ runs:
           _args+=( "-P${MAVEN_PROFILES}" )
         fi
         export GPG_TTY=$(tty) && mvn "${_args[@]}" deploy
-        mvn -DprocessAllModules=true -DnextSnapshot=true versions:set
 
     - name: Update POM Version
       if: ${{ github.actor != 'dependabot[bot]' }}
-      env:
-        MAVEN_GPG_KEY: ${{ inputs.gpg-private-key }}
-        MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
-        MAVEN_PROFILES: ${{ steps.resolve_values.outputs.profiles }}
       shell: bash
       # language="shell script"
       run: |
@@ -163,7 +158,6 @@ runs:
         _args+=( "-DnextSnapshot=true" )
         _args+=( "-DgenerateBackupPoms=false" )
         mvn "${_args[@]}" versions:set
-        mvn -DprocessAllModules=true -DnextSnapshot=true versions:set
 
     - name: Commit POM Version Update
       uses: stefanzweifel/git-auto-commit-action@v6

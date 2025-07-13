@@ -39,7 +39,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-tags: true
 
     - name: Setup Jdk
       uses: actions/setup-java@v4

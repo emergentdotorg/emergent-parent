@@ -23,7 +23,7 @@ on:
 
 jobs:
   invoke-deploy:
-    uses: .github/workflows/maven-deploy_.yaml
+    uses: ./.github/workflows/maven-deploy_.yaml
     secrets: inherit
     with:
       java-version: '8'

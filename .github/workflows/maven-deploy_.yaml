@@ -37,7 +37,7 @@ jobs:
       - name: Bump and Tag
         if: ${{ inputs.tag-bump != '' }}
         id: bump_and_tag
-        uses: .github/actions/bump-and-tag
+        uses: ./.github/actions/bump-and-tag
         with:
           tag-bump: ${{ inputs.tag-bump }}
           github-token: ${{ github.token }}

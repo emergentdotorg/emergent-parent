@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    uses: .github/workflows/maven-verify_.yaml
+    uses: ./.github/workflows/maven-verify_.yaml
     secrets: inherit
     with:
       java-version: '8'

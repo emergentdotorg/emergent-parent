@@ -3,7 +3,7 @@ description: 'Deploy using maven as build tool'
 outputs:
   version:
     description: "The released version"
-    value: ${{ steps.resolve_values.outputs.version }}
+    value: ${{ steps.resolve_values.outputs.version-release }}
 inputs:
   java-version:
     description: 'JDK version'
@@ -35,15 +35,15 @@ inputs:
   deploy-snapshot-url:
     description: 'Dist server snapshot URL'
     default: ''
+  github-actor:
+    description: "Required for permission to tag the repo."
+    default: ${{ github.actor }}
   github-token:
     description: "Required for permission to tag the repo."
-    required: true
-  tag-bump:
-    description: 'Tag bump'
-    default: 'patch'
+    default: ${{ github.token }}
   tag-prefix:
     description: 'Tag prefix'
-    default: ''
+    default: 'v'
 
 runs:
   using: "composite"
@@ -51,24 +51,29 @@ runs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
         fetch-tags: true
+        token: ${{ inputs.github-token }}
 
-    - name: Setup Git User
+    #- uses: fregante/setup-git-user@v2
+    - name: Setup Git Config
       shell: bash
       # language="shell script"
       run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
+        git config user.name github-actions[bot]
+        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+        printf '%s\n' \
+          '/github-actions' \
+          >> ".git/info/exclude"
 
-    - name: Increment and Tag Version
-      if: ${{ inputs.tag-bump != '' }}
-      id: tag_latest
-      uses: mathieudutour/github-tag-action@v6.2
+    - name: 'Checkout resources repository'
+      uses: actions/checkout@v4
       with:
-        github_token: ${{ inputs.github-token }}
-        default_bump: ${{ inputs.tag-bump }}
-        tag_prefix: ${{ inputs.tag-prefix }}
+        repository: 'emergentdotorg/maven-emergent-actions'
+        ref: 'main'
+        path: 'github-actions'
+        token: ${{ inputs.github-token }}
+        sparse-checkout: |
+          .github/resources
 
     - name: Setup Jdk
       uses: actions/setup-java@v4
@@ -85,93 +90,77 @@ runs:
       with:
         maven-version: ${{ inputs.maven-version }}
 
-    #- uses: s4u/maven-settings-action@v3.1.0
-    #  with:
-    #    githubServer: true
-    #    servers: >
-    #      [{
-    #        "id": "${{ inputs.deploy-server }}",
-    #        "username": "${env.DEPLOY_ACTOR}",
-    #        "password": "${env.DEPLOY_TOKEN}"
-    #      }]
-
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 1
-        fetch-tags: true
-
     - name: Resolve Values
       id: resolve_values
       shell: bash
       env:
-        PROFILES_RAW: ${{ inputs.maven-profiles }}
+        MAVEN_PROFILES: ${{ inputs.maven-profiles }}
       # language="shell script"
       run: |
         # Convert spaces to commas in the profiles string
-        declare -a profilesArr=( ${PROFILES_RAW} )
-        PROFILES_CSV=$(IFS=, ; echo "${profilesArr[*]}")
+        declare -a _profiles=( ${MAVEN_PROFILES} )
+        PROFILES=$(IFS=, ; echo "${_profiles[*]}")
         # Determine version
-        declare -a _args=( -e )
-        if [ -n "${PROFILES_CSV}" ]; then
-          _args+=( "-P${PROFILES_CSV}" )
+        VERSION_CUR="$(mvn -e help:evaluate -q -DforceStdout -Dexpression=project.version)"
+        VERSION_REL="$(mvn -e help:evaluate -q -DforceStdout -Dexpression=version.release)"
+        if [ "${VERSION_CUR}" != "${VERSION_REL}" ]; then
+          VERSION_TAG=true
         fi
-        VERSION="$(mvn ${_args[*]} help:evaluate -q -DforceStdout -Dexpression=project.version)"
         #VERSION="${VERSION%-SNAPSHOT}"
-        echo "VERSION=${VERSION}"
+        echo "PROFILES=${PROFILES}"
+        echo "VERSION_CUR=${VERSION_CUR}"
+        echo "VERSION_REL=${VERSION_REL}"
+        echo "VERSION_TAG=${VERSION_TAG:-false}"
         printf '%s\n' \
-          "profiles=${PROFILES_CSV}" \
-          "version=${VERSION}" \
+          "profiles=${PROFILES}" \
+          "version-current=${VERSION_CUR}" \
+          "version-release=${VERSION_REL}" \
+          "version-needtag=${VERSION_TAG:-false}" \
           >> $GITHUB_OUTPUT
 
+    - name: Increment and Tag Version
+      if: steps.resolve_values.outputs.version-needtag
+      id: tag_latest
+      uses: mathieudutour/github-tag-action@v6.2
+      with:
+        github_token: ${{ inputs.github-token }}
+        custom_tag: ${{ format('{0}{1}', inputs.tag-prefix, steps.resolve_values.outputs.version-release) }}
+
+    - uses: actions/checkout@v4
+      if: ${{ steps.resolve_values.outputs.version-needtag && success() }}
+      with:
+        fetch-tags: true
+        token: ${{ inputs.github-token }}
+
     - name: Execute Maven Deploy
-      if: ${{ github.actor != 'dependabot[bot]' }}
       env:
-        DEPLOY_SERVER: ${{ inputs.deploy-server }}
         DEPLOY_ACTOR: ${{ inputs.deploy-actor }}
         DEPLOY_TOKEN: ${{ inputs.deploy-token }}
-        DEPLOY_RELEASE_URL: ${{ inputs.deploy-release-url }}
-        DEPLOY_SNAPSHOT_URL: ${{ inputs.deploy-snapshot-url }}
+        DEPLOY_SERVER: ${{ inputs.deploy-server }}
+        GITHUB_ACTOR: ${{ inputs.github-actor }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
         MAVEN_GPG_KEY: ${{ inputs.gpg-private-key }}
         MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
         MAVEN_PROFILES: ${{ steps.resolve_values.outputs.profiles }}
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+        MAVEN_SETTINGS: ${{ format('{0}/{1}', github.workspace, 'github-actions/.github/resources/settings.xml' ) }}
       shell: bash
       # language="shell script"
       run: |
-        declare -a _args=( "-e" )
-        _args+=( "--batch-mode" )
-        _args+=( "--no-transfer-progress" )
-        if [ -n "${DEPLOY_SERVER}" ]; then
-          if [ -n "${DEPLOY_RELEASE_URL}" ]; then
-            _args+=( "-DaltReleaseDeploymentRepository=${DEPLOY_SERVER}::${DEPLOY_RELEASE_URL}" )
-          fi
-          if [ -n "${DEPLOY_SNAPSHOT_URL}" ]; then
-            _args+=( "-DaltSnapshotDeploymentRepository=${DEPLOY_SERVER}::${DEPLOY_SNAPSHOT_URL}" )
-          fi
-        fi
-        if [ -n "${MAVEN_PROFILES}" ]; then
-          _args+=( "-P${MAVEN_PROFILES}" )
-        fi
+        declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )
+        _args+=( "-s" "${MAVEN_SETTINGS}" )
+        if [ -n "${MAVEN_PROFILES}" ]; then _args+=( "-P${MAVEN_PROFILES}" ) ; fi
         export GPG_TTY=$(tty) && mvn "${_args[@]}" deploy
 
     - name: Update POM Version
-      if: ${{ github.actor != 'dependabot[bot]' }}
+      if: ${{ success() }}
       shell: bash
       # language="shell script"
       run: |
-        declare -a _args=( "-e" )
-        _args+=( "--batch-mode" )
-        _args+=( "--no-transfer-progress" )
-        _args+=( "-DprocessAllModules=true" )
-        _args+=( "-DnextSnapshot=true" )
-        _args+=( "-DgenerateBackupPoms=false" )
-        mvn "${_args[@]}" versions:set
+        declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )
+        _args+=( "-s" "${MAVEN_SETTINGS}" )
+        _args+=( -DgenerateBackupPoms=false -DprocessAllModules=true )
+        mvn "${_args[@]}" versions:set -DnextSnapshot=true
 
     - name: Commit POM Version Update
       uses: stefanzweifel/git-auto-commit-action@v6
-
-    - name: Execute Maven Install
-      if: ${{ github.actor == 'dependabot[bot]' }}
-      shell: bash
-      # language="shell script"
-      run: |
-        mvn --batch-mode install -e

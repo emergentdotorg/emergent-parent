@@ -11,7 +11,7 @@
   <name>Emergent.org</name>
   <url>https://github.com/emergentdotorg</url>
   <description>
-    The Emergent.org parent POM provides a standardized configuration across other projects under the umbrella.
+    The Emergent.org parent POM provides for a standardized configuration across projects org-wide.
   </description>
   <organization>
     <name>Emergent.org</name>
@@ -47,6 +47,9 @@
   </scm>
 
   <properties>
+    <!--
+    <project.build.outputTimestamp>2025-01-01T00:00:00Z</project.build.outputTimestamp>
+    -->
     <maven.compiler.target>8</maven.compiler.target>
     <maven.compiler.source>${maven.compiler.target}</maven.compiler.source>
     <minimalJavaBuildVersion>${maven.compiler.target}</minimalJavaBuildVersion>
@@ -439,7 +442,28 @@
 
   <profiles>
     <profile>
-      <id>ci</id>
+      <id>toolchain-java9plus</id>
+      <activation>
+        <property>
+          <name>maven.compiler.target</name>
+          <value>!8</value>
+        </property>
+      </activation>
+      <properties>
+        <toolchainsJdkVersionRange>${maven.compiler.target}.+</toolchainsJdkVersionRange>
+      </properties>
+    </profile>
+    <profile>
+      <id>maven-compiler-release</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
+      </properties>
+    </profile>
+    <profile>
+      <id>release</id>
       <activation>
         <property>
           <name>env.CI</name>
@@ -447,13 +471,6 @@
       </activation>
       <build>
         <plugins>
-          <!--
-          <plugin>
-            <groupId>org.sonatype.central</groupId>
-            <artifactId>central-publishing-maven-plugin</artifactId>
-            <extensions>true</extensions>
-          </plugin>
-          -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -493,25 +510,25 @@
       </build>
     </profile>
     <profile>
-      <id>toolchain-java9plus</id>
+      <id>central-distmgt</id>
       <activation>
         <property>
-          <name>maven.compiler.target</name>
-          <value>!8</value>
+          <name>env.DEPLOY_SERVER</name>
+          <value>central</value>
         </property>
       </activation>
-      <properties>
-        <toolchainsJdkVersionRange>${maven.compiler.target}.+</toolchainsJdkVersionRange>
-      </properties>
-    </profile>
-    <profile>
-      <id>maven-compiler-release</id>
-      <activation>
-        <jdk>[9,)</jdk>
-      </activation>
-      <properties>
-        <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
-      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>${env.DEPLOY_SERVER}</publishingServerId>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>

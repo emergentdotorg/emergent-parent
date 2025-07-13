@@ -1,0 +1,17 @@
+name: Configure Git user
+description: Configure the Git user.name and user.email which enables committing
+author: Patrick Woodworth
+branding:
+  icon: chevron-up
+  color: yellow
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      # language="shell script"
+      run: |
+        git config user.name github-actions[bot]
+        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+        printf '%s\n' \
+          '/github-actions/' \
+          >> ".git/info/exclude"

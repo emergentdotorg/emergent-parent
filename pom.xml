@@ -5,7 +5,7 @@
 
   <groupId>org.emergent.maven.parent</groupId>
   <artifactId>emergent-parent</artifactId>
-  <version>0.0.7-SNAPSHOT</version>
+  <version>0.0.8-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Emergent.org</name>

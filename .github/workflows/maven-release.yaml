@@ -26,7 +26,7 @@ on:
 
 jobs:
   invoke-release:
-    uses: ./.github/workflows/maven-deploy_.yaml
+    uses: ./.github/workflows/maven-release_.yaml
     secrets: inherit
     with:
       java-version: '11'

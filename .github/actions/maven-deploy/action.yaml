@@ -1,0 +1,125 @@
+name: 'Maven Deploy'
+description: 'Deploy using maven as build tool'
+outputs:
+  version:
+    description: "The deployed version"
+    value: ${{ steps.resolve_values.outputs.version }}
+inputs:
+  java-version:
+    description: 'JDK version'
+    required: true
+  deploy-server:
+    description: 'Dist server id, e.g. central, github, nexus'
+    required: true
+  deploy-actor:
+    description: 'user to authenticate at the artifact repository'
+    required: true
+  deploy-token:
+    description: 'password to authenticate at the artifact repository'
+    required: true
+  gpg-private-key:
+    description: 'private key for artifact signing'
+    required: true
+  gpg-passphrase:
+    description: 'pass phrase for te gpg signing key'
+    required: true
+  maven-profiles:
+    description: 'Maven profiles to activate, comma-delimited'
+    default: ''
+  maven-version:
+    description: 'Maven version'
+    default: '3.9.9'
+  deploy-release-url:
+    description: 'Dist server release URL'
+    default: ''
+  deploy-snapshot-url:
+    description: 'Dist server snapshot URL'
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Jdk
+      uses: actions/setup-java@v4
+      with:
+        cache: maven
+        distribution: 'temurin'
+        java-version: ${{ inputs.java-version }}
+        server-id: ${{ inputs.deploy-server }}
+        server-username: DEPLOY_ACTOR
+        server-password: DEPLOY_TOKEN
+
+    - name: Install Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: ${{ inputs.maven-version }}
+
+    #- uses: s4u/maven-settings-action@v3.1.0
+    #  with:
+    #    githubServer: true
+    #    servers: >
+    #      [{
+    #        "id": "${{ inputs.deploy-server }}",
+    #        "username": "${env.DEPLOY_ACTOR}",
+    #        "password": "${env.DEPLOY_TOKEN}"
+    #      }]
+
+    - name: Resolve Values
+      id: resolve_values
+      shell: bash
+      env:
+        PROFILES_RAW: ${{ inputs.maven-profiles }}
+      # language="shell script"
+      run: |
+        # Convert spaces to commas in the profiles string
+        declare -a profilesArr=( ${PROFILES_RAW} )
+        PROFILES_CSV=$(IFS=, ; echo "${profilesArr[*]}")
+        # Determine version
+        declare -a _args=( -e )
+        if [ -n "${PROFILES_CSV}" ]; then
+          _args+=( "-P${PROFILES_CSV}" )
+        fi
+        VERSION="$(mvn ${_args[*]} help:evaluate -q -DforceStdout -Dexpression=project.version)"
+        #VERSION="${VERSION%-SNAPSHOT}"
+        printf '%s\n' \
+          "profiles=${PROFILES_CSV}" \
+          "version=${VERSION}" \
+          >> $GITHUB_OUTPUT
+
+    - name: Execute Maven Deploy
+      if: ${{ github.actor != 'dependabot[bot]' }}
+      env:
+        DEPLOY_SERVER: ${{ inputs.deploy-server }}
+        DEPLOY_ACTOR: ${{ inputs.deploy-actor }}
+        DEPLOY_TOKEN: ${{ inputs.deploy-token }}
+        DEPLOY_RELEASE_URL: ${{ inputs.deploy-release-url }}
+        DEPLOY_SNAPSHOT_URL: ${{ inputs.deploy-snapshot-url }}
+        MAVEN_GPG_KEY: ${{ inputs.gpg-private-key }}
+        MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
+        MAVEN_PROFILES: ${{ steps.resolve_values.outputs.profiles }}
+      shell: bash
+      # language="shell script"
+      run: |
+        declare -a _args=( "--batch-mode" "-e" )
+        _args+=( "-DdeployAtEnd=true" )
+        if [ -n "${DEPLOY_SERVER}" ]; then
+          if [ -n "${DEPLOY_RELEASE_URL}" ]; then
+            _args+=( "-DaltReleaseDeploymentRepository=${DEPLOY_SERVER}::${DEPLOY_RELEASE_URL}" )
+          fi
+          if [ -n "${DEPLOY_SNAPSHOT_URL}" ]; then
+            _args+=( "-DaltReleaseDeploymentRepository=${DEPLOY_SERVER}::${DEPLOY_SNAPSHOT_URL}" )
+          fi
+        fi
+        if [ -n "${MAVEN_PROFILES}" ]; then
+          _args+=( "-P${MAVEN_PROFILES}" )
+        fi
+        export GPG_TTY=$(tty) && mvn "${_args[@]}" deploy
+
+    - name: Execute Maven Install
+      if: ${{ github.actor == 'dependabot[bot]' }}
+      shell: bash
+      # language="shell script"
+      run: |
+        mvn --batch-mode install -e

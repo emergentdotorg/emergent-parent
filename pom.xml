@@ -3,9 +3,9 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.emergent</groupId>
-  <artifactId>emergent</artifactId>
-  <version>14-SNAPSHOT</version>
+  <groupId>org.emergent.maven.parent</groupId>
+  <artifactId>emergent-parent</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Emergent.org</name>
@@ -18,10 +18,14 @@
     <url>https://emergent.org/</url>
   </organization>
 
+  <modules>
+    <module>emergent-parent-java</module>
+  </modules>
+
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -36,7 +40,8 @@
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/emergentdotorg/maven-emergent-parent.git</connection>
+    <connection>scm:git:https://github.com/emergentdotorg/maven-emergent-parent</connection>
+    <developerConnection>scm:git:git@github.com:emergentdotorg/maven-emergent-parent</developerConnection>
     <url>https://github.com/emergentdotorg/maven-emergent-parent/tree/${project.scm.tag}</url>
     <tag>HEAD</tag>
   </scm>
@@ -44,25 +49,33 @@
   <properties>
     <maven.compiler.target>8</maven.compiler.target>
     <maven.compiler.source>${maven.compiler.target}</maven.compiler.source>
+    <minimalJavaBuildVersion>${maven.compiler.target}</minimalJavaBuildVersion>
+    <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
+    <toolchainsJdkVersionRange>[1.8,9)</toolchainsJdkVersionRange>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <surefire.version>3.3.0</surefire.version>
+    <surefire.version>3.5.3</surefire.version>
+    <version.build-helper-maven-plugin>3.6.0</version.build-helper-maven-plugin>
     <version.central-publishing-maven-plugin>0.8.0</version.central-publishing-maven-plugin>
+    <version.duplicate-finder-maven-plugin>2.0.1</version.duplicate-finder-maven-plugin>
+    <version.flatten-maven-plugin>1.7.1</version.flatten-maven-plugin>
+    <version.jacoco-maven-plugin>0.8.13</version.jacoco-maven-plugin>
+    <version.jib-maven-plugin>3.4.5</version.jib-maven-plugin>
     <version.maven-antrun-plugin>3.1.0</version.maven-antrun-plugin>
     <version.maven-assembly-plugin>3.7.1</version.maven-assembly-plugin>
-    <version.maven-clean-plugin>3.4.0</version.maven-clean-plugin>
-    <version.maven-checkstyle-plugin>3.4.0</version.maven-checkstyle-plugin>
-    <version.maven-compiler-plugin>3.13.0</version.maven-compiler-plugin>
-    <version.maven-dependency-plugin>3.7.1</version.maven-dependency-plugin>
-    <version.maven-deploy-plugin>3.1.2</version.maven-deploy-plugin>
+    <version.maven-checkstyle-plugin>3.6.0</version.maven-checkstyle-plugin>
+    <version.maven-clean-plugin>3.4.1</version.maven-clean-plugin>
+    <version.maven-compiler-plugin>3.14.0</version.maven-compiler-plugin>
+    <version.maven-dependency-plugin>3.8.1</version.maven-dependency-plugin>
+    <version.maven-deploy-plugin>3.1.4</version.maven-deploy-plugin>
     <version.maven-ear-plugin>3.3.0</version.maven-ear-plugin>
     <version.maven-enforcer-plugin>3.5.0</version.maven-enforcer-plugin>
-    <version.maven-gpg-plugin>3.2.4</version.maven-gpg-plugin>
-    <version.maven-help-plugin>3.4.1</version.maven-help-plugin>
-    <version.maven-install-plugin>3.1.2</version.maven-install-plugin>
-    <version.maven-invoker-plugin>3.7.0</version.maven-invoker-plugin>
+    <version.maven-gpg-plugin>3.2.7</version.maven-gpg-plugin>
+    <version.maven-help-plugin>3.5.1</version.maven-help-plugin>
+    <version.maven-install-plugin>3.1.4</version.maven-install-plugin>
+    <version.maven-invoker-plugin>3.9.0</version.maven-invoker-plugin>
     <version.maven-jar-plugin>3.4.2</version.maven-jar-plugin>
-    <version.maven-javadoc-plugin>3.7.0</version.maven-javadoc-plugin>
+    <version.maven-javadoc-plugin>3.11.2</version.maven-javadoc-plugin>
     <version.maven-plugin-tools>3.13.1</version.maven-plugin-tools>
     <version.maven-project-info-reports-plugin>3.6.1</version.maven-project-info-reports-plugin>
     <version.maven-release-plugin>3.1.1</version.maven-release-plugin>
@@ -73,12 +86,39 @@
     <version.maven-site-plugin>3.12.1</version.maven-site-plugin>
     <version.maven-source-plugin>3.3.1</version.maven-source-plugin>
     <version.maven-surefire>${surefire.version}</version.maven-surefire>
+    <version.maven-toolchains-plugin>3.2.0</version.maven-toolchains-plugin>
     <version.maven-war-plugin>3.4.0</version.maven-war-plugin>
+    <version.sortpom-maven-plugin>3.5.1</version.sortpom-maven-plugin>
+    <version.versions-maven-plugin>2.18.0</version.versions-maven-plugin>
   </properties>
 
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.emergent.maven.plugins</groupId>
+          <artifactId>sortpom-maven-plugin</artifactId>
+          <version>${version.sortpom-maven-plugin}</version>
+          <configuration>
+            <prioritizeProjectGroup>true</prioritizeProjectGroup>
+            <priorityGroups>org.emergent</priorityGroups>
+            <createBackupFile>false</createBackupFile>
+            <expandEmptyElements>false</expandEmptyElements>
+            <lineSeparator>\n</lineSeparator>
+            <sortDependencyExclusions>groupId,artifactId</sortDependencyExclusions>
+            <sortExecutions>true</sortExecutions>
+            <sortModules>true</sortModules>
+            <sortOrderFile>emergent-sortpom-order.xml</sortOrderFile>
+            <sortPlugins>groupId,artifactId</sortPlugins>
+            <sortProperties>true</sortProperties>
+            <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.google.cloud.tools</groupId>
+          <artifactId>jib-maven-plugin</artifactId>
+          <version>${version.jib-maven-plugin}</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
@@ -91,13 +131,13 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>${version.maven-clean-plugin}</version>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${version.maven-checkstyle-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>${version.maven-checkstyle-plugin}</version>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${version.maven-clean-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -153,6 +193,14 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${version.maven-jar-plugin}</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -191,6 +239,11 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>${version.maven-shade-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>${version.maven-site-plugin}</version>
         </plugin>
@@ -211,13 +264,38 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-toolchains-plugin</artifactId>
+          <version>${version.maven-toolchains-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <version>${version.maven-war-plugin}</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>${version.maven-shade-plugin}</version>
+          <groupId>org.basepom.maven</groupId>
+          <artifactId>duplicate-finder-maven-plugin</artifactId>
+          <version>${version.duplicate-finder-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>${version.build-helper-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>${version.flatten-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>${version.versions-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${version.jacoco-maven-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.sonatype.central</groupId>
@@ -226,78 +304,156 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>create-resources-jar</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/resources.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-requireJavaVersion</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>${minimalJavaBuildVersion}</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-requireMavenVersion</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>${minimalMavenBuildVersion}</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-requireUpperBoundDeps</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireUpperBoundDeps />
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-toolchains-plugin</artifactId>
+        <configuration>
+          <toolchains>
+            <jdk>
+              <version>${toolchainsJdkVersionRange}</version>
+            </jdk>
+          </toolchains>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>select-jdk-toolchain</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+            </goals>
+            <configuration>
+              <failOnWarning>true</failOnWarning>
+              <ignoreNonCompile>true</ignoreNonCompile>
+              <outputXML>true</outputXML>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <phase>prepare-package</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <profiles>
     <profile>
-      <id>central-dist</id>
+      <id>ci</id>
       <activation>
         <property>
-          <name>publishingServerId</name>
+          <name>env.CI</name>
         </property>
       </activation>
       <build>
         <plugins>
+          <!--
           <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
             <extensions>true</extensions>
           </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>emergent-release</id>
-      <properties>
-        <minimalJavaBuildVersion>${maven.compiler.target}</minimalJavaBuildVersion>
-        <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>enforce-maven-version</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <requireMavenVersion>
-                      <version>${minimalMavenBuildVersion}</version>
-                    </requireMavenVersion>
-                  </rules>
-                </configuration>
-              </execution>
-              <execution>
-                <id>enforce-java-version</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <requireJavaVersion>
-                      <version>${minimalJavaBuildVersion}</version>
-                    </requireJavaVersion>
-                  </rules>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+          -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -315,18 +471,6 @@
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-              <archive>
-                <manifest>
-                  <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                </manifest>
-              </archive>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <executions>
               <execution>
@@ -334,6 +478,7 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
+                <phase>verify</phase>
                 <configuration>
                   <!-- Requires the following
                   MAVEN_GPG_PASSPHRASE: ${{ secrets.RELEASES_GPG_PASSPHRASE }}
@@ -344,21 +489,23 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <configuration>
-              <goals>deploy</goals>
-              <autoVersionSubmodules>true</autoVersionSubmodules>
-              <preparationProfiles>emergent-release</preparationProfiles>
-              <releaseProfiles>emergent-release</releaseProfiles>
-            </configuration>
-          </plugin>
         </plugins>
       </build>
     </profile>
     <profile>
-      <id>jdk9+</id>
+      <id>toolchain-java9plus</id>
+      <activation>
+        <property>
+          <name>maven.compiler.target</name>
+          <value>!8</value>
+        </property>
+      </activation>
+      <properties>
+        <toolchainsJdkVersionRange>${maven.compiler.target}.+</toolchainsJdkVersionRange>
+      </properties>
+    </profile>
+    <profile>
+      <id>maven-compiler-release</id>
       <activation>
         <jdk>[9,)</jdk>
       </activation>

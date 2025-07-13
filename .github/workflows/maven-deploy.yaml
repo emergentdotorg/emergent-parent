@@ -1,4 +1,4 @@
-name: Maven Release
+name: Maven Deploy
 
 on:
   workflow_dispatch:
@@ -6,7 +6,6 @@ on:
       deploy-server:
         description: 'Distribution server-id'
         type: choice
-        required: false
         default: emergent-nexus
         options:
           - central
@@ -16,16 +15,14 @@ on:
       push-changes:
         description: 'Push commits during the maven release goal execution'
         type: boolean
-        required: false
         default: true
       dry-run:
         description: 'Dry-run without commits or deploys'
         type: boolean
-        required: false
         default: false
 
 jobs:
-  invoke-release:
+  invoke-deploy:
     uses: .github/workflows/maven-deploy_.yaml
     secrets: inherit
     with:
@@ -34,6 +31,6 @@ jobs:
 
   process-results:
     runs-on: ubuntu-latest
-    needs: invoke-release
+    needs: invoke-deploy
     steps:
-      - run: echo version=${{ needs.invoke-release.outputs.version }}
+      - run: echo version=${{ needs.invoke-deploy.outputs.version }}

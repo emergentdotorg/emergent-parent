@@ -1,9 +1,10 @@
 name: Bump Version Tag
 on:
-  push:
-    branches:
-      - main
-      - master
+  workflow_dispatch:
+  #push:
+  #  branches:
+  #    - main
+  #    - master
 jobs:
   build:
     runs-on: ubuntu-latest

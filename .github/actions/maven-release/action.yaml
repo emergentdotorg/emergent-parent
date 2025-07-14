@@ -98,6 +98,21 @@ runs:
         MAVEN_PROFILES: ${{ inputs.maven-profiles }}
       # language="shell script"
       run: |
+        catIfExists() {
+          if [ -f "$1" ]; then
+            echo "File: $1"
+            cat "$1"
+            echo "-----"
+          else
+            echo "WARNING: File $1 does not exist"
+          fi
+        }
+        echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+        echo "PWD=$(pwd)"
+        find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
+        catIfExists listing.txt
+        catIfExists "${GITHUB_WORKSPACE}/github-actions/.github/resources/settings.xml"
+        catIfExists "./github-actions/.github/resources/settings.xml"
         # Convert spaces to commas in the profiles string
         declare -a _profiles=( ${MAVEN_PROFILES} )
         PROFILES=$(IFS=, ; echo "${_profiles[*]}")
@@ -134,7 +149,7 @@ runs:
         fetch-tags: true
         token: ${{ inputs.github-token }}
 
-    - name: Execute Maven Deploy
+    - name: Validate Project
       env:
         DEPLOY_ACTOR: ${{ inputs.deploy-actor }}
         DEPLOY_TOKEN: ${{ inputs.deploy-token }}
@@ -158,9 +173,30 @@ runs:
             echo "WARNING: File $1 does not exist"
           fi
         }
+        echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+        echo "PWD=$(pwd)"
+        find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
+        catIfExists listing.txt
         catIfExists "${MAVEN_SETTINGS}"
+        catIfExists "${GITHUB_WORKSPACE}/github-actions/.github/resources/settings.xml"
+        catIfExists "./github-actions/.github/resources/settings.xml"
+
+    - name: Execute Maven Deploy
+      env:
+        DEPLOY_ACTOR: ${{ inputs.deploy-actor }}
+        DEPLOY_TOKEN: ${{ inputs.deploy-token }}
+        DEPLOY_SERVER: ${{ inputs.deploy-server }}
+        GITHUB_ACTOR: ${{ inputs.github-actor }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        MAVEN_GPG_KEY: ${{ inputs.gpg-private-key }}
+        MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
+        MAVEN_PROFILES: ${{ steps.resolve_values.outputs.profiles }}
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+      shell: bash
+      # language="shell script"
+      run: |
         declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )
-        _args+=( "-s" "${MAVEN_SETTINGS}" )
+        _args+=( "-s" "./github-actions/.github/resources/settings.xml" )
         if [ -n "${MAVEN_PROFILES}" ]; then _args+=( "-P${MAVEN_PROFILES}" ) ; fi
         export GPG_TTY=$(tty) && mvn "${_args[@]}" deploy
 
@@ -173,7 +209,7 @@ runs:
       # language="shell script"
       run: |
         declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )
-        _args+=( "-s" "${MAVEN_SETTINGS}" )
+        _args+=( "-s" "./github-actions/.github/resources/settings.xml" )
         _args+=( -DgenerateBackupPoms=false -DprocessAllModules=true )
         mvn "${_args[@]}" versions:set -DnextSnapshot=true
 

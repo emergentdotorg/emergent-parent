@@ -54,7 +54,7 @@ jobs:
         # language="shell script"
         run: |
           echo "dirs:"
-          find . -path './.git/**' -prune -o \( -type d -print \) | tee dirs.txt
+          find . -path './.git/**' -prune -o \( -type f -print \) | tee dirs.txt
           cat dirs.txt
 
 

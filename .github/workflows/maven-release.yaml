@@ -31,7 +31,7 @@ on:
 
 jobs:
   invoke-release:
-    uses: ./.github/workflows/maven-release_.yaml
+    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@main
     secrets: inherit
     with:
       java-version: '11'

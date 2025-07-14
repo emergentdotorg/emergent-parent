@@ -1,10 +1,10 @@
 name: Maven Release
 
 on:
-  push:
-    branches:
-      - main
-      - master
+  #push:
+  #  branches:
+  #    - main
+  #    - master
 
   workflow_dispatch:
 #    inputs:

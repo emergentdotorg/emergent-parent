@@ -12,6 +12,12 @@ on:
           - dump-context
           - setup-java
 
+      settings-dir:
+        description: '~/.m2'
+        type: string
+        default: ''
+
+
 jobs:
   scratch:
     runs-on: ubuntu-latest
@@ -45,18 +51,58 @@ jobs:
           repository: 'emergentdotorg/maven-emergent-parent'
           ref: 'main'
           path: 'github-actions'
+          token: ${{ inputs.github-token }}
           sparse-checkout: |
             .github/resources
+
+      - name: Resolve Paths
+        id: resolve_paths
+        shell: bash
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          SETTINGS_DIR: ${{ inputs.settings-dir != '' && inputs.settings-dir || '~/.m2' }}
+        # language="shell script"
+        run: |
+          RESOLVED_DIR="${SETTINGS_DIR/#~/$HOME}"
+          mkdir -p "${RESOLVED_DIR}"
+          printf '%s\n' \
+          "settings-path=${RESOLVED_DIR}" \
+          "user-settings=${RESOLVED_DIR}/settings.xml" \
+          "user-toolchains=${RESOLVED_DIR}/toolchains.xml" \
+          "global-settings=${RESOLVED_DIR}/settings-global.xml" \
+          >> $GITHUB_OUTPUT
 
       - name: 'Verify Setup'
         if: ${{ inputs.op == 'misc' }}
         shell: bash
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          USER_SETTINGS: ${{ steps.setup_java.outputs.user-settings }}
+          USER_TOOLCHAINS: ${{ steps.setup_java.outputs.user-toolchains }}
+          GLOBAL_SETTINGS: ${{ steps.setup_java.outputs.global-settings }}
         # language="shell script"
         run: |
-          echo "dirs:"
-          find . -path './.git/**' -prune -o \( -type f -print \) | tee dirs.txt
-          cat dirs.txt
-
+          catIfExists() {
+            if [ -f "$1" ]; then
+            echo "File: $1"
+            cat "$1"
+            echo "-----"
+            else
+            echo "WARNING: File $1 does not exist"
+            fi
+          }
+          echo "USER_SETTINGS=${USER_SETTINGS}"
+          echo "GLOBAL_SETTINGS=${GLOBAL_SETTINGS}"
+          echo "USER_TOOLCHAINS=${USER_TOOLCHAINS}"
+          echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+          echo "PWD=$(pwd)"
+          find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
+          catIfExists listing.txt
+          catIfExists "${USER_SETTINGS}"
+          catIfExists "${GLOBAL_SETTINGS}"
+          catIfExists "${USER_TOOLCHAINS}"
+          catIfExists "${GITHUB_WORKSPACE}/github-actions/.github/resources/settings.xml"
+          catIfExists "./github-actions/.github/resources/settings.xml"
 
       - name: Dump Context Java
         if: ${{ inputs.op == 'dump-context' }}

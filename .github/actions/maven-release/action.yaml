@@ -64,13 +64,13 @@ runs:
         git config user.name github-actions[bot]
         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
         printf '%s\n' \
-          '/.mvn/resources' \
+          '/.mvn/res' \
           '/github-actions' \
           >> ".git/info/exclude"
 
     - uses: emergentdotorg/maven-release-action@main
       with:
-        resources-dest: '.mvn/resources'
+        resources-dest: '.mvn/res'
 
     #- uses: actions/checkout@v4
     #  id: checkout_resources
@@ -91,7 +91,7 @@ runs:
       run: |
         RESOLVED_DIR="${SETTINGS_DIR/#~/$HOME}"
         mkdir -p "${RESOLVED_DIR}"
-        RESOURCE_DIR="$(pwd)/github-actions/.github/resources"
+        RESOURCE_DIR="${GITHUB_WORKSPACE}/.mvn/res"
         printf '%s\n' \
           "MAVEN_USER_SETTINGS=${RESOURCE_DIR}/settings.xml" \
           >> $GITHUB_ENV
@@ -127,8 +127,8 @@ runs:
         echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
         echo "CHECKOUT_PRIMARY_REF=${CHECKOUT_PRIMARY_REF}"
         echo "CHECKOUT_PRIMARY_COMMIT=${CHECKOUT_PRIMARY_COMMIT}"
-        echo "CHECKOUT_RESOURCES_REF=${CHECKOUT_RESOURCES_REF}"
-        echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
+        #echo "CHECKOUT_RESOURCES_REF=${CHECKOUT_RESOURCES_REF}"
+        #echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
         #find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
         #catIfExists listing.txt
         catIfExists "${MAVEN_USER_SETTINGS}"

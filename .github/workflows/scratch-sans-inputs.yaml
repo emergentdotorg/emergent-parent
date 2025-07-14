@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
+
+env:
+  RESOURCES_DIR: '.mvn/resources'
 
 jobs:
   scratch:
@@ -19,16 +23,22 @@ jobs:
         with:
           fetch-tags: true
 
-      - uses: actions/checkout@v4
+      - uses: emergentdotorg/maven-release-action@main
         name: Checkout Resources
         id: checkout_resources
         with:
-          repository: 'emergentdotorg/maven-emergent-parent'
-          ref: 'main'
-          path: 'github-actions'
-          token: ${{ github.token }}
-          sparse-checkout: |
-            .github/resources
+          resources-dest: '.mvn/resources'
+
+      #- uses: actions/checkout@v4
+      #  name: Checkout Resources
+      #  id: checkout_resources
+      #  with:
+      #    repository: 'emergentdotorg/maven-emergent-parent'
+      #    ref: 'main'
+      #    path: 'github-actions'
+      #    token: ${{ github.token }}
+      #    sparse-checkout: |
+      #      .github/resources
 
       - shell: bash
         name: Resolve Paths
@@ -41,11 +51,11 @@ jobs:
           RESOLVED_DIR="${SETTINGS_DIR/#~/$HOME}"
           mkdir -p "${RESOLVED_DIR}"
           printf '%s\n' \
-          "settings_path=${RESOLVED_DIR}" \
-          "user_settings=${RESOLVED_DIR}/settings.xml" \
-          "user_toolchains=${RESOLVED_DIR}/toolchains.xml" \
-          "global_settings=${RESOLVED_DIR}/settings-global.xml" \
-          >> $GITHUB_OUTPUT
+            "settings_path=${RESOLVED_DIR}" \
+            "user_settings=${RESOURCES_DIR}/settings.xml" \
+            "user_toolchains=${RESOLVED_DIR}/toolchains.xml" \
+            "global_settings=${RESOLVED_DIR}/settings-global.xml" \
+            >> $GITHUB_OUTPUT
 
       - shell: bash
         name: Verify Environment
@@ -73,8 +83,8 @@ jobs:
           echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
           echo "CHECKOUT_PRIMARY_REF=${CHECKOUT_PRIMARY_REF}"
           echo "CHECKOUT_PRIMARY_COMMIT=${CHECKOUT_PRIMARY_COMMIT}"
-          echo "CHECKOUT_RESOURCES_REF=${CHECKOUT_RESOURCES_REF}"
-          echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
+          #echo "CHECKOUT_RESOURCES_REF=${CHECKOUT_RESOURCES_REF}"
+          #echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
           #find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
           #catIfExists listing.txt
           catIfExists "${USER_SETTINGS}"

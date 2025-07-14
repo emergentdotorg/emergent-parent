@@ -21,7 +21,7 @@
       </properties>
       <userProperties>
         <project.build.outputTimestamp>${commit.timestamp.iso}</project.build.outputTimestamp>
-        <version.release>${ref.tagver}</version.release>
+        <ver.release>${ref.tagver}</ver.release>
       </userProperties>
     </ref>
 
@@ -42,7 +42,8 @@
         <version.semantic.nexttrel>${version.major}.${version.minor}.${version.patch.next}</version.semantic.nexttrel>
         -->
         <project.build.outputTimestamp>${commit.timestamp.iso}</project.build.outputTimestamp>
-        <version.release>${version.core}</version.release>
+        <ver.current>${version}</ver.current>
+        <ver.release>${version.core}</ver.release>
       </userProperties>
     </ref>
 
@@ -60,7 +61,8 @@
       </properties>
       <userProperties>
         <project.build.outputTimestamp>${commit.timestamp.iso}</project.build.outputTimestamp>
-        <version.release>${version.core}-${ref.branch}</version.release>
+        <ver.current>${version.core}-${ref.branch}-SNAPSHOT</ver.current>
+        <ver.release>${version.core}-${ref.branch}</ver.release>
       </userProperties>
     </ref>
   </refs>
@@ -78,7 +80,8 @@
     </properties>
     <userProperties>
       <project.build.outputTimestamp>${commit.timestamp.iso}</project.build.outputTimestamp>
-      <version.release>${version.core}-${commit}</version.release>
+      <ver.current>${version.core}-${commit}-SNAPSHOT</ver.current>
+      <ver.release>${version.core}-${commit}</ver.release>
     </userProperties>
   </rev>
 

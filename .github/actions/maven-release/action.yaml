@@ -59,26 +59,28 @@ runs:
     #    git-excludes: /github-actions
 
     - shell: bash
-      env:
-        GIT_EXCLUDE_PATTERNS: ${{ inputs.git-excludes }}
       # language="shell script"
       run: |
         git config user.name github-actions[bot]
         git config user.email 41898282+github-actions[bot]@users.noreply.github.com
         printf '%s\n' \
+          '/.mvn/resources' \
           '/github-actions' \
           >> ".git/info/exclude"
 
-
-    - uses: actions/checkout@v4
-      id: checkout_resources
+    - uses: emergentdotorg/maven-release-action@main
       with:
-        repository: 'emergentdotorg/maven-emergent-parent'
-        ref: 'main'
-        path: 'github-actions'
-        token: ${{ inputs.github-token }}
-        sparse-checkout: |
-          .github/resources
+        resources-dest: '.mvn/resources'
+
+    #- uses: actions/checkout@v4
+    #  id: checkout_resources
+    #  with:
+    #    repository: 'emergentdotorg/maven-emergent-parent'
+    #    ref: 'main'
+    #    path: 'github-actions'
+    #    token: ${{ inputs.github-token }}
+    #    sparse-checkout: |
+    #      .github/resources
 
     - shell: bash
       id: resolve_paths
@@ -89,9 +91,13 @@ runs:
       run: |
         RESOLVED_DIR="${SETTINGS_DIR/#~/$HOME}"
         mkdir -p "${RESOLVED_DIR}"
+        RESOURCE_DIR="$(pwd)/github-actions/.github/resources"
+        printf '%s\n' \
+          "MAVEN_USER_SETTINGS=${RESOURCE_DIR}/settings.xml" \
+          >> $GITHUB_ENV
         printf '%s\n' \
           "settings_path=${RESOLVED_DIR}" \
-          "user_settings=${RESOLVED_DIR}/settings.xml" \
+          "user_settings=${RESOURCE_DIR}/settings.xml" \
           "user_toolchains=${RESOLVED_DIR}/toolchains.xml" \
           "global_settings=${RESOLVED_DIR}/settings-global.xml" \
           >> $GITHUB_OUTPUT
@@ -125,7 +131,8 @@ runs:
         echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
         #find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
         #catIfExists listing.txt
-        catIfExists "${USER_SETTINGS}"
+        catIfExists "${MAVEN_USER_SETTINGS}"
+        #catIfExists "${USER_SETTINGS}"
         catIfExists "${GLOBAL_SETTINGS}"
         catIfExists "${USER_TOOLCHAINS}"
         catIfExists "./github-actions/.github/resources/settings.xml"
@@ -155,7 +162,7 @@ runs:
         PROFILES=$(IFS=, ; echo "${_profiles[*]}")
         # Determine version
         VERSION_CUR="$(mvn -e help:evaluate -q -DforceStdout -Dexpression=project.version)"
-        VERSION_REL="$(mvn -e help:evaluate -q -DforceStdout -Dexpression=version.release)"
+        VERSION_REL="$(mvn -e help:evaluate -q -DforceStdout -Dexpression=ver.release)"
         if [ "${VERSION_CUR}" != "${VERSION_REL}" ]; then
           VERSION_TAG=true
         fi
@@ -209,7 +216,7 @@ runs:
       run: |
         echo "project.version=$(mvn help:evaluate -q -DforceStdout -Dexpression=project.version)"
         declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )
-        _args+=( "-s" "./github-actions/.github/resources/settings.xml" )
+        _args+=( "-s" "${MAVEN_USER_SETTINGS}" )
         if [ -n "${MAVEN_PROFILES}" ]; then _args+=( "-P${MAVEN_PROFILES}" ) ; fi
         export GPG_TTY=$(tty) && mvn "${_args[@]}" deploy
 
@@ -221,7 +228,7 @@ runs:
       run: |
         echo "project.version=$(mvn help:evaluate -q -DforceStdout -Dexpression=project.version)"
         declare -a _args=( -e  --batch-mode --no-transfer-progress )
-        _args+=( -s ./github-actions/.github/resources/settings.xml )
+        _args+=( "-s" "${MAVEN_USER_SETTINGS}" )
         _args+=( -DgenerateBackupPoms=false -DprocessAllModules=true )
         mvn "${_args[@]}" versions:set -DnextSnapshot=true
         echo "project.version=$(mvn help:evaluate -q -DforceStdout -Dexpression=project.version)"

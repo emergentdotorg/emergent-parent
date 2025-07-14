@@ -5,7 +5,7 @@
 
   <groupId>org.emergent.maven.parent</groupId>
   <artifactId>emergent-parent</artifactId>
-  <version>${revision}</version>
+  <version>0.0.15-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Emergent.org</name>
@@ -438,6 +438,7 @@
           </execution>
         </executions>
       </plugin>
+      <!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
@@ -461,6 +462,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
     </plugins>
   </build>
 

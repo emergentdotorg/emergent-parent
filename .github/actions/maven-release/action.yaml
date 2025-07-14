@@ -48,15 +48,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+      id: checkout_primary
       with:
         fetch-tags: true
         token: ${{ inputs.github-token }}
 
-    #- uses: fregante/setup-git-user@v2
-    - name: Setup Git Config
-      shell: bash
+    #- uses: ./.github/actions/git-init-config
+    #  with:
+    #    git-excludes: /github-actions
+
+    - shell: bash
+      env:
+        GIT_EXCLUDE_PATTERNS: ${{ inputs.git-excludes }}
       # language="shell script"
       run: |
         git config user.name github-actions[bot]
@@ -65,8 +69,9 @@ runs:
           '/github-actions' \
           >> ".git/info/exclude"
 
-    - name: 'Checkout resources repository'
-      uses: actions/checkout@v4
+
+    - uses: actions/checkout@v4
+      id: checkout_resources
       with:
         repository: 'emergentdotorg/maven-emergent-parent'
         ref: 'main'
@@ -75,27 +80,32 @@ runs:
         sparse-checkout: |
           .github/resources
 
-    - name: Setup Jdk
-      uses: actions/setup-java@v4
-      with:
-        cache: maven
-        distribution: 'temurin'
-        java-version: ${{ inputs.java-version }}
-        server-id: ${{ inputs.deploy-server }}
-        server-username: DEPLOY_ACTOR
-        server-password: DEPLOY_TOKEN
-
-    - name: Install Maven
-      uses: stCarolas/setup-maven@v5
-      with:
-        maven-version: ${{ inputs.maven-version }}
-
-    - name: Resolve Values
-      id: resolve_values
-      shell: bash
+    - shell: bash
+      id: resolve_paths
       env:
         GITHUB_WORKSPACE: ${{ github.workspace }}
-        MAVEN_PROFILES: ${{ inputs.maven-profiles }}
+        SETTINGS_DIR: '~/.m2'
+      # language="shell script"
+      run: |
+        RESOLVED_DIR="${SETTINGS_DIR/#~/$HOME}"
+        mkdir -p "${RESOLVED_DIR}"
+        printf '%s\n' \
+          "settings_path=${RESOLVED_DIR}" \
+          "user_settings=${RESOLVED_DIR}/settings.xml" \
+          "user_toolchains=${RESOLVED_DIR}/toolchains.xml" \
+          "global_settings=${RESOLVED_DIR}/settings-global.xml" \
+          >> $GITHUB_OUTPUT
+
+    - shell: bash
+      env:
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+        CHECKOUT_PRIMARY_REF: ${{ steps.checkout_primary.outputs.ref }}
+        CHECKOUT_PRIMARY_COMMIT: ${{ steps.checkout_primary.outputs.commit }}
+        CHECKOUT_RESOURCES_REF: ${{ steps.checkout_resources.outputs.ref }}
+        CHECKOUT_RESOURCES_COMMIT: ${{ steps.checkout_resources.outputs.commit }}
+        USER_SETTINGS: ${{ steps.resolve_paths.outputs.user_settings }}
+        GLOBAL_SETTINGS: ${{ steps.resolve_paths.outputs.global_settings }}
+        USER_TOOLCHAINS: ${{ steps.resolve_paths.outputs.user_toolchains }}
       # language="shell script"
       run: |
         catIfExists() {
@@ -107,12 +117,39 @@ runs:
             echo "WARNING: File $1 does not exist"
           fi
         }
-        echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
         echo "PWD=$(pwd)"
-        find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
-        catIfExists listing.txt
-        catIfExists "${GITHUB_WORKSPACE}/github-actions/.github/resources/settings.xml"
+        echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+        echo "CHECKOUT_PRIMARY_REF=${CHECKOUT_PRIMARY_REF}"
+        echo "CHECKOUT_PRIMARY_COMMIT=${CHECKOUT_PRIMARY_COMMIT}"
+        echo "CHECKOUT_RESOURCES_REF=${CHECKOUT_RESOURCES_REF}"
+        echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
+        #find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
+        #catIfExists listing.txt
+        catIfExists "${USER_SETTINGS}"
+        catIfExists "${GLOBAL_SETTINGS}"
+        catIfExists "${USER_TOOLCHAINS}"
         catIfExists "./github-actions/.github/resources/settings.xml"
+
+    - uses: actions/setup-java@v4
+      with:
+        #cache: maven
+        distribution: 'temurin'
+        java-version: ${{ inputs.java-version }}
+        server-id: ${{ inputs.deploy-server }}
+        server-username: DEPLOY_ACTOR
+        server-password: DEPLOY_TOKEN
+
+    - uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: ${{ inputs.maven-version }}
+
+    - shell: bash
+      id: resolve_values
+      env:
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+        MAVEN_PROFILES: ${{ inputs.maven-profiles }}
+      # language="shell script"
+      run: |
         # Convert spaces to commas in the profiles string
         declare -a _profiles=( ${MAVEN_PROFILES} )
         PROFILES=$(IFS=, ; echo "${_profiles[*]}")
@@ -133,24 +170,31 @@ runs:
           "version-release=${VERSION_REL}" \
           "version-needtag=${VERSION_TAG:-false}" \
           >> $GITHUB_OUTPUT
+        echo "project.version=${VERSION_CUR}"
 
-    - name: Increment and Tag Version
-      if: steps.resolve_values.outputs.version-needtag
+    - uses: mathieudutour/github-tag-action@v6.2
       id: tag_latest
-      uses: mathieudutour/github-tag-action@v6.2
+      if: steps.resolve_values.outputs.version-needtag
       with:
         github_token: ${{ inputs.github-token }}
         tag_prefix: ${{ inputs.tag-prefix }}
         custom_tag: ${{ format('{0}', steps.resolve_values.outputs.version-release) }}
 
-    - uses: actions/checkout@v4
-      if: ${{ steps.resolve_values.outputs.version-needtag && success() }}
-      with:
-        clean: 'false'
-        fetch-tags: true
-        token: ${{ inputs.github-token }}
+    - shell: bash
+      # language="shell script"
+      run: |
+        echo "project.version=$(mvn help:evaluate -q -DforceStdout -Dexpression=project.version)"
+        git fetch -t
+        echo "project.version=$(mvn help:evaluate -q -DforceStdout -Dexpression=project.version)"
 
-    - name: Validate Project
+    #- uses: actions/checkout@v4
+    #  if: ${{ steps.resolve_values.outputs.version-needtag && success() }}
+    #  with:
+    #    clean: 'false'
+    #    fetch-tags: true
+    #    token: ${{ inputs.github-token }}
+
+    - shell: bash
       env:
         DEPLOY_ACTOR: ${{ inputs.deploy-actor }}
         DEPLOY_TOKEN: ${{ inputs.deploy-token }}
@@ -161,58 +205,25 @@ runs:
         MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
         MAVEN_PROFILES: ${{ steps.resolve_values.outputs.profiles }}
         GITHUB_WORKSPACE: ${{ github.workspace }}
-        MAVEN_SETTINGS: ${{ github.workspace }}/github-actions/.github/resources/settings.xml
-      shell: bash
       # language="shell script"
       run: |
-        catIfExists() {
-          if [ -f "$1" ]; then
-            echo "File: $1"
-            cat "$1"
-            echo "-----"
-          else
-            echo "WARNING: File $1 does not exist"
-          fi
-        }
-        echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
-        echo "PWD=$(pwd)"
-        find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
-        catIfExists listing.txt
-        catIfExists "${MAVEN_SETTINGS}"
-        catIfExists "${GITHUB_WORKSPACE}/github-actions/.github/resources/settings.xml"
-        catIfExists "./github-actions/.github/resources/settings.xml"
-
-    - name: Execute Maven Deploy
-      env:
-        DEPLOY_ACTOR: ${{ inputs.deploy-actor }}
-        DEPLOY_TOKEN: ${{ inputs.deploy-token }}
-        DEPLOY_SERVER: ${{ inputs.deploy-server }}
-        GITHUB_ACTOR: ${{ inputs.github-actor }}
-        GITHUB_TOKEN: ${{ inputs.github-token }}
-        MAVEN_GPG_KEY: ${{ inputs.gpg-private-key }}
-        MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
-        MAVEN_PROFILES: ${{ steps.resolve_values.outputs.profiles }}
-        GITHUB_WORKSPACE: ${{ github.workspace }}
-      shell: bash
-      # language="shell script"
-      run: |
+        echo "project.version=$(mvn help:evaluate -q -DforceStdout -Dexpression=project.version)"
         declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )
         _args+=( "-s" "./github-actions/.github/resources/settings.xml" )
         if [ -n "${MAVEN_PROFILES}" ]; then _args+=( "-P${MAVEN_PROFILES}" ) ; fi
         export GPG_TTY=$(tty) && mvn "${_args[@]}" deploy
 
-    - name: Update POM Version
+    - shell: bash
       if: ${{ success() }}
-      shell: bash
       env:
         GITHUB_WORKSPACE: ${{ github.workspace }}
-        MAVEN_SETTINGS: ${{ github.workspace }}/github-actions/.github/resources/settings.xml
       # language="shell script"
       run: |
-        declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )
-        _args+=( "-s" "./github-actions/.github/resources/settings.xml" )
+        echo "project.version=$(mvn help:evaluate -q -DforceStdout -Dexpression=project.version)"
+        declare -a _args=( -e  --batch-mode --no-transfer-progress )
+        _args+=( -s ./github-actions/.github/resources/settings.xml )
         _args+=( -DgenerateBackupPoms=false -DprocessAllModules=true )
         mvn "${_args[@]}" versions:set -DnextSnapshot=true
+        echo "project.version=$(mvn help:evaluate -q -DforceStdout -Dexpression=project.version)"
 
-    - name: Commit POM Version Update
-      uses: stefanzweifel/git-auto-commit-action@v6
+    - uses: stefanzweifel/git-auto-commit-action@v6

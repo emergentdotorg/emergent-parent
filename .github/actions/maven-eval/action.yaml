@@ -1,0 +1,16 @@
+name: Maven Evaluate
+description: Evaluate maven expressions
+inputs:
+  expression:
+    description: 'Maven property expression'
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        MAVEN_EXPRESSION: ${{ inputs.expression }}
+      # language="shell script"
+      run: |
+        RESULT="$( mvn -e help:evaluate -q -DforceStdout -Dexpression=${MAVEN_EXPRESSION} )"
+        echo "result=${RESULT}" >> $GITHUB_OUTPUT

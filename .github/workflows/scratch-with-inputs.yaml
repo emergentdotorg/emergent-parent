@@ -1,4 +1,4 @@
-name: Scratch
+name: Scratch with Inputs
 
 on:
   workflow_dispatch:
@@ -11,31 +11,28 @@ on:
           - misc
           - dump-context
           - setup-java
-
       settings-dir:
         description: '~/.m2'
         type: string
         default: ''
 
-
 jobs:
-  scratch:
+  misc:
+    if: ${{ inputs.op == 'misc' }}
     runs-on: ubuntu-latest
     permissions:
-      # Give the default GITHUB_TOKEN write permission to commit and push the
-      # added or changed files to the repository.
+      # Give the default GITHUB_TOKEN write permission to commit and push to the repository.
       contents: write
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        name: Checkout Primary
+        id: checkout_primary
         with:
           fetch-tags: true
 
       #- uses: fregante/setup-git-user@v2
-      - name: Setup Git Config
-        if: ${{ inputs.op == 'misc' }}
-        shell: bash
+      - shell: bash
+        name: Setup Git Config
         # language="shell script"
         run: |
           git config user.name github-actions[bot]
@@ -44,9 +41,9 @@ jobs:
             '/github-actions' \
             >> ".git/info/exclude"
 
-      - name: 'Checkout resources repository'
-        if: ${{ inputs.op == 'misc' }}
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        name: Checkout Resources
+        id: checkout_resources
         with:
           repository: 'emergentdotorg/maven-emergent-parent'
           ref: 'main'
@@ -55,9 +52,9 @@ jobs:
           sparse-checkout: |
             .github/resources
 
-      - name: Resolve Paths
+      - shell: bash
+        name: Resolve Paths
         id: resolve_paths
-        shell: bash
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
           SETTINGS_DIR: ${{ inputs.settings-dir != '' && inputs.settings-dir || '~/.m2' }}
@@ -66,52 +63,79 @@ jobs:
           RESOLVED_DIR="${SETTINGS_DIR/#~/$HOME}"
           mkdir -p "${RESOLVED_DIR}"
           printf '%s\n' \
-          "settings-path=${RESOLVED_DIR}" \
-          "user-settings=${RESOLVED_DIR}/settings.xml" \
-          "user-toolchains=${RESOLVED_DIR}/toolchains.xml" \
-          "global-settings=${RESOLVED_DIR}/settings-global.xml" \
+          "settings_path=${RESOLVED_DIR}" \
+          "user_settings=${RESOLVED_DIR}/settings.xml" \
+          "user_toolchains=${RESOLVED_DIR}/toolchains.xml" \
+          "global_settings=${RESOLVED_DIR}/settings-global.xml" \
           >> $GITHUB_OUTPUT
 
-      - name: 'Verify Setup'
-        if: ${{ inputs.op == 'misc' }}
-        shell: bash
+      - shell: bash
+        name: Verify Environment
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
-          USER_SETTINGS: ${{ steps.setup_java.outputs.user-settings }}
-          USER_TOOLCHAINS: ${{ steps.setup_java.outputs.user-toolchains }}
-          GLOBAL_SETTINGS: ${{ steps.setup_java.outputs.global-settings }}
+          CHECKOUT_PRIMARY_REF: ${{ steps.checkout_primary.outputs.ref }}
+          CHECKOUT_PRIMARY_COMMIT: ${{ steps.checkout_primary.outputs.commit }}
+          CHECKOUT_RESOURCES_REF: ${{ steps.checkout_resources.outputs.ref }}
+          CHECKOUT_RESOURCES_COMMIT: ${{ steps.checkout_resources.outputs.commit }}
+          USER_SETTINGS: ${{ steps.resolve_paths.outputs.user_settings }}
+          GLOBAL_SETTINGS: ${{ steps.resolve_paths.outputs.global_settings }}
+          USER_TOOLCHAINS: ${{ steps.resolve_paths.outputs.user_toolchains }}
         # language="shell script"
         run: |
           catIfExists() {
             if [ -f "$1" ]; then
-            echo "File: $1"
-            cat "$1"
-            echo "-----"
+              echo "File: $1"
+              cat "$1"
+              echo "-----"
             else
-            echo "WARNING: File $1 does not exist"
+              echo "WARNING: File $1 does not exist"
             fi
           }
-          echo "USER_SETTINGS=${USER_SETTINGS}"
-          echo "GLOBAL_SETTINGS=${GLOBAL_SETTINGS}"
-          echo "USER_TOOLCHAINS=${USER_TOOLCHAINS}"
-          echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
           echo "PWD=$(pwd)"
-          find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
-          catIfExists listing.txt
+          echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+          echo "CHECKOUT_PRIMARY_REF=${CHECKOUT_PRIMARY_REF}"
+          echo "CHECKOUT_PRIMARY_COMMIT=${CHECKOUT_PRIMARY_COMMIT}"
+          echo "CHECKOUT_RESOURCES_REF=${CHECKOUT_RESOURCES_REF}"
+          echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
+          #find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
+          #catIfExists listing.txt
           catIfExists "${USER_SETTINGS}"
           catIfExists "${GLOBAL_SETTINGS}"
           catIfExists "${USER_TOOLCHAINS}"
-          catIfExists "${GITHUB_WORKSPACE}/github-actions/.github/resources/settings.xml"
           catIfExists "./github-actions/.github/resources/settings.xml"
 
+  dump-context:
+    if: ${{ inputs.op == 'dump-context' }}
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push to the repository.
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout Primary
+        id: checkout_primary
+        with:
+          fetch-tags: true
+
       - name: Dump Context Java
-        if: ${{ inputs.op == 'dump-context' }}
         id: dump_context
         uses: emergentdotorg/github-actions/dump-context@v2
 
+  setup-java:
+    if: ${{ inputs.op == 'setup-java' }}
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push to the repository.
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout Primary
+        id: checkout_primary
+        with:
+          fetch-tags: true
+
       - name: Setup Java
         id: setup_java
-        if: ${{ inputs.op == 'setup-java' }}
         uses: emergentdotorg/github-actions/setup-java-env@v2
         with:
           deploy-server: 'central'
@@ -123,7 +147,7 @@ jobs:
           gpg-private-key: ${{ secrets.maven_gpg_private_key }}
 
       - name: 'Verify Java and Maven'
-        if: ${{ inputs.op == 'setup-java' && success() }}
+        if: ${{ success() }}
         shell: bash
         env:
           USER_SETTINGS: ${{ steps.setup_java.outputs.user-settings }}

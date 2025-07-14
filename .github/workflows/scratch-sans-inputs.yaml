@@ -1,0 +1,83 @@
+name: Scratch sans Inputs
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  scratch:
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push to the repository.
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout Primary
+        id: checkout_primary
+        with:
+          fetch-tags: true
+
+      - uses: actions/checkout@v4
+        name: Checkout Resources
+        id: checkout_resources
+        with:
+          repository: 'emergentdotorg/maven-emergent-parent'
+          ref: 'main'
+          path: 'github-actions'
+          token: ${{ github.token }}
+          sparse-checkout: |
+            .github/resources
+
+      - shell: bash
+        name: Resolve Paths
+        id: resolve_paths
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          SETTINGS_DIR: '~/.m2'
+        # language="shell script"
+        run: |
+          RESOLVED_DIR="${SETTINGS_DIR/#~/$HOME}"
+          mkdir -p "${RESOLVED_DIR}"
+          printf '%s\n' \
+          "settings_path=${RESOLVED_DIR}" \
+          "user_settings=${RESOLVED_DIR}/settings.xml" \
+          "user_toolchains=${RESOLVED_DIR}/toolchains.xml" \
+          "global_settings=${RESOLVED_DIR}/settings-global.xml" \
+          >> $GITHUB_OUTPUT
+
+      - shell: bash
+        name: Verify Environment
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          CHECKOUT_PRIMARY_REF: ${{ steps.checkout_primary.outputs.ref }}
+          CHECKOUT_PRIMARY_COMMIT: ${{ steps.checkout_primary.outputs.commit }}
+          CHECKOUT_RESOURCES_REF: ${{ steps.checkout_resources.outputs.ref }}
+          CHECKOUT_RESOURCES_COMMIT: ${{ steps.checkout_resources.outputs.commit }}
+          USER_SETTINGS: ${{ steps.resolve_paths.outputs.user_settings }}
+          GLOBAL_SETTINGS: ${{ steps.resolve_paths.outputs.global_settings }}
+          USER_TOOLCHAINS: ${{ steps.resolve_paths.outputs.user_toolchains }}
+        # language="shell script"
+        run: |
+          catIfExists() {
+            if [ -f "$1" ]; then
+              echo "File: $1"
+              cat "$1"
+              echo "-----"
+            else
+              echo "WARNING: File $1 does not exist"
+            fi
+          }
+          echo "PWD=$(pwd)"
+          echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+          echo "CHECKOUT_PRIMARY_REF=${CHECKOUT_PRIMARY_REF}"
+          echo "CHECKOUT_PRIMARY_COMMIT=${CHECKOUT_PRIMARY_COMMIT}"
+          echo "CHECKOUT_RESOURCES_REF=${CHECKOUT_RESOURCES_REF}"
+          echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
+          #find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
+          #catIfExists listing.txt
+          catIfExists "${USER_SETTINGS}"
+          catIfExists "${GLOBAL_SETTINGS}"
+          catIfExists "${USER_TOOLCHAINS}"
+          catIfExists "./github-actions/.github/resources/settings.xml"

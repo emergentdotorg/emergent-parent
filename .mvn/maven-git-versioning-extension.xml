@@ -9,7 +9,7 @@
     <!-- Matches a tag -->
     <ref type="tag">
       <pattern><![CDATA[(v)?(?<tagver>.+)]]></pattern>
-      <version>${ref.tagver}</version>
+      <version>${ref.tagver}${dirty}</version>
       <properties>
         <original.version>${version}</original.version>
         <version.semantic.release>${ref.tagver}</version.semantic.release>

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.emergent.maven.parent</groupId>
     <artifactId>emergent-parent</artifactId>
-    <version>0.0.13-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <artifactId>emergent-parent-java</artifactId>
@@ -167,37 +167,6 @@
       <id>flattener</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>flatten-maven-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-              <flattenMode>oss</flattenMode>
-              <pomElements>
-                <build>keep</build>
-                <distributionManagement>flatten</distributionManagement>
-                <!--<dependencyManagement>expand</dependencyManagement>-->
-                <!--<dependencies>expand</dependencies>-->
-              </pomElements>
-            </configuration>
-            <executions>
-              <!-- enable flattening -->
-              <execution>
-                <id>flatten</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>flatten</goal>
-                </goals>
-              </execution>
-              <!-- ensure proper cleanup -->
-              <execution>
-                <id>flatten.clean</id>
-                <goals>
-                  <goal>clean</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>

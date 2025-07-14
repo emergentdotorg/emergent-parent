@@ -51,7 +51,7 @@ jobs:
           repository: 'emergentdotorg/maven-emergent-parent'
           ref: 'main'
           path: 'github-actions'
-          token: ${{ inputs.github-token }}
+          token: ${{ github.token }}
           sparse-checkout: |
             .github/resources
 

@@ -156,7 +156,7 @@ runs:
         PROFILES=$(IFS=, ; echo "${_profiles[*]}")
         # Determine version
         VERSION_CUR="$(mvn -e help:evaluate -q -DforceStdout -Dexpression=project.version)"
-        VERSION_REL="$(mvn -e help:evaluate -q -DforceStdout -Dexpression=version.core)"
+        VERSION_REL="$(mvn -e help:evaluate -q -DforceStdout -Dexpression=version.nextrel)"
         if [ "${VERSION_CUR}" != "${VERSION_REL}" ]; then
           VERSION_TAG=true
         fi

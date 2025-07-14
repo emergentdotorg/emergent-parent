@@ -8,61 +8,47 @@
 
     <!-- Matches a tag -->
     <ref type="tag">
-      <pattern><![CDATA[(v)?(?<tagver>.+)]]></pattern>
-      <version>${ref.tagver}${dirty}</version>
+      <pattern><![CDATA[(v)?(?<name>.+)]]></pattern>
+      <version>${ref.name}</version>
       <properties>
         <original.version>${version}</original.version>
-        <version.semantic.release>${ref.tagver}</version.semantic.release>
-        <version.semantic>${ref.tagver}</version.semantic>
-        <version.numeric>${ref.tagver}</version.numeric>
-        <version.symbolic>redeploy-${ref.tagver}</version.symbolic>
+        <!--<version.symbolic>redeploy-${ref.name}</version.symbolic>-->
         <scm.branch>${ref}</scm.branch>
-        <!--<npm.project.version>${ref.tagver}</npm.project.version>-->
       </properties>
       <userProperties>
         <project.build.outputTimestamp>${commit.timestamp.iso}</project.build.outputTimestamp>
-        <ver.release>${ref.tagver}</ver.release>
+        <version.nextrel>${describe.tag.version.core}</version.nextrel>
       </userProperties>
     </ref>
 
     <!-- Matches a restricted branch -->
     <ref type="branch">
       <pattern>main|lts-([0-9.]*)</pattern>
+      <describeTagPattern><![CDATA[(v)?(?<name>.*)]]></describeTagPattern>
       <version>${version}</version>
       <properties>
         <original.version>${version}</original.version>
-        <version.semantic.release>${version.core}</version.semantic.release>
-        <version.semantic>${version}</version.semantic>
-        <version.numeric>${version.core}</version.numeric>
-        <version.symbolic>latest</version.symbolic>
+        <!--<version.symbolic>latest</version.symbolic>-->
         <scm.branch>${branch}</scm.branch>
       </properties>
       <userProperties>
-        <!--
-        <version.semantic.nexttrel>${version.major}.${version.minor}.${version.patch.next}</version.semantic.nexttrel>
-        -->
         <project.build.outputTimestamp>${commit.timestamp.iso}</project.build.outputTimestamp>
-        <ver.current>${version}</ver.current>
-        <ver.release>${version.core}</ver.release>
+        <version.nextrel>${version.core}</version.nextrel>
       </userProperties>
     </ref>
 
     <!-- Matches a development branch -->
     <ref type="branch">
       <pattern><![CDATA[(?<branch>.+)]]></pattern>
-      <version>${ref.branch}-SNAPSHOT</version>
+      <version>${ref.branch.slug}-SNAPSHOT</version>
       <properties>
         <original.version>${version}</original.version>
-        <version.semantic.release>${version.core}-${ref.branch}</version.semantic.release>
-        <version.semantic>${version.core}-${ref.branch}-SNAPSHOT</version.semantic>
-        <version.numeric>${version.core}</version.numeric>
-        <version.symbolic>${ref.branch}</version.symbolic>
+        <!--<ver.symbolic>${ref.branch}</ver.symbolic>-->
         <scm.branch>${ref.branch}</scm.branch>
       </properties>
       <userProperties>
         <project.build.outputTimestamp>${commit.timestamp.iso}</project.build.outputTimestamp>
-        <ver.current>${version.core}-${ref.branch}-SNAPSHOT</ver.current>
-        <ver.release>${version.core}-${ref.branch}</ver.release>
+        <version.nextrel>unknown</version.nextrel>
       </userProperties>
     </ref>
   </refs>
@@ -72,16 +58,12 @@
     <version>${version.core}-${commit}-SNAPSHOT</version>
     <properties>
       <original.version>${version}</original.version>
-      <version.semantic.release>${version.core}-${commit}</version.semantic.release>
-      <version.semantic>${version.core}-${commit}-SNAPSHOT</version.semantic>
-      <version.numeric>${version.core}</version.numeric>
-      <version.symbolic>${commit}</version.symbolic>
+      <!--<version.symbolic>${commit}</version.symbolic>-->
       <scm.branch>unknown</scm.branch>
     </properties>
     <userProperties>
       <project.build.outputTimestamp>${commit.timestamp.iso}</project.build.outputTimestamp>
-      <ver.current>${version.core}-${commit}-SNAPSHOT</ver.current>
-      <ver.release>${version.core}-${commit}</ver.release>
+      <version.nextrel>unknown</version.nextrel>
     </userProperties>
   </rev>
 

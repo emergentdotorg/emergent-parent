@@ -94,6 +94,7 @@ runs:
       id: resolve_values
       shell: bash
       env:
+        GITHUB_WORKSPACE: ${{ github.workspace }}
         MAVEN_PROFILES: ${{ inputs.maven-profiles }}
       # language="shell script"
       run: |
@@ -144,10 +145,20 @@ runs:
         MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
         MAVEN_PROFILES: ${{ steps.resolve_values.outputs.profiles }}
         GITHUB_WORKSPACE: ${{ github.workspace }}
-        MAVEN_SETTINGS: 'github-actions/.github/resources/settings.xml'
+        MAVEN_SETTINGS: ${{ github.workspace }}/github-actions/.github/resources/settings.xml
       shell: bash
       # language="shell script"
       run: |
+        catIfExists() {
+          if [ -f "$1" ]; then
+            echo "File: $1"
+            cat "$1"
+            echo "-----"
+          else
+            echo "WARNING: File $1 does not exist"
+          fi
+        }
+        catIfExists "${MAVEN_SETTINGS}"
         declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )
         _args+=( "-s" "${MAVEN_SETTINGS}" )
         if [ -n "${MAVEN_PROFILES}" ]; then _args+=( "-P${MAVEN_PROFILES}" ) ; fi
@@ -156,6 +167,7 @@ runs:
     - name: Update POM Version
       if: ${{ success() }}
       shell: bash
+      env:
       # language="shell script"
       run: |
         declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )

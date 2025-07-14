@@ -68,7 +68,7 @@ runs:
     - name: 'Checkout resources repository'
       uses: actions/checkout@v4
       with:
-        repository: 'emergentdotorg/maven-emergent-actions'
+        repository: 'emergentdotorg/maven-emergent-parent'
         ref: 'main'
         path: 'github-actions'
         token: ${{ inputs.github-token }}

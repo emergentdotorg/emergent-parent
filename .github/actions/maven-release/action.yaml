@@ -144,7 +144,7 @@ runs:
         MAVEN_GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
         MAVEN_PROFILES: ${{ steps.resolve_values.outputs.profiles }}
         GITHUB_WORKSPACE: ${{ github.workspace }}
-        MAVEN_SETTINGS: ${{ format('{0}/{1}', github.workspace, 'github-actions/.github/resources/settings.xml' ) }}
+        MAVEN_SETTINGS: 'github-actions/.github/resources/settings.xml'
       shell: bash
       # language="shell script"
       run: |

@@ -168,6 +168,8 @@ runs:
       if: ${{ success() }}
       shell: bash
       env:
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+        MAVEN_SETTINGS: ${{ github.workspace }}/github-actions/.github/resources/settings.xml
       # language="shell script"
       run: |
         declare -a _args=( "-e"  "--batch-mode" "--no-transfer-progress" )

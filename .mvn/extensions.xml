@@ -3,10 +3,17 @@
   xsi:schemaLocation="http://maven.apache.org/EXTENSIONS/1.0.0
             http://maven.apache.org/xsd/core-extensions-1.0.0.xsd">
 
+  <!--
   <extension>
     <groupId>me.qoomon</groupId>
     <artifactId>maven-git-versioning-extension</artifactId>
     <version>9.11.0</version>
+  </extension>
+  -->
+  <extension>
+    <groupId>com.github.manikmagar</groupId>
+    <artifactId>git-versioner-maven-extension</artifactId>
+    <version>0.11.0</version>
   </extension>
 
 </extensions>

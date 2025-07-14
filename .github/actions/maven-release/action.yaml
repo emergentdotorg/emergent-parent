@@ -146,6 +146,7 @@ runs:
     - uses: actions/checkout@v4
       if: ${{ steps.resolve_values.outputs.version-needtag && success() }}
       with:
+        clean: 'false'
         fetch-tags: true
         token: ${{ inputs.github-token }}
 

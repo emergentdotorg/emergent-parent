@@ -68,9 +68,9 @@ runs:
           '/github-actions' \
           >> ".git/info/exclude"
 
-    - uses: emergentdotorg/maven-release-action@main
-      with:
-        resources-dest: '.mvn/res'
+    #- uses: emergentdotorg/maven-release-action@main
+    #  with:
+    #    resources-dest: '.mvn/res'
 
     #- uses: actions/checkout@v4
     #  id: checkout_resources
@@ -93,11 +93,11 @@ runs:
         mkdir -p "${RESOLVED_DIR}"
         RESOURCE_DIR="${GITHUB_WORKSPACE}/.mvn/res"
         printf '%s\n' \
-          "MAVEN_USER_SETTINGS=${RESOURCE_DIR}/settings.xml" \
+          "MAVEN_USER_SETTINGS=${GITHUB_ACTION_PATH}/settings.xml" \
           >> $GITHUB_ENV
         printf '%s\n' \
           "settings_path=${RESOLVED_DIR}" \
-          "user_settings=${RESOURCE_DIR}/settings.xml" \
+          "user_settings=${GITHUB_ACTION_PATH}/settings.xml" \
           "user_toolchains=${RESOLVED_DIR}/toolchains.xml" \
           "global_settings=${RESOLVED_DIR}/settings-global.xml" \
           >> $GITHUB_OUTPUT
@@ -127,15 +127,9 @@ runs:
         echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
         echo "CHECKOUT_PRIMARY_REF=${CHECKOUT_PRIMARY_REF}"
         echo "CHECKOUT_PRIMARY_COMMIT=${CHECKOUT_PRIMARY_COMMIT}"
-        #echo "CHECKOUT_RESOURCES_REF=${CHECKOUT_RESOURCES_REF}"
-        #echo "CHECKOUT_RESOURCES_COMMIT=${CHECKOUT_RESOURCES_COMMIT}"
-        #find . -path './.git/**' -prune -o \( -type f -print \) > listing.txt
-        #catIfExists listing.txt
         catIfExists "${MAVEN_USER_SETTINGS}"
-        #catIfExists "${USER_SETTINGS}"
         catIfExists "${GLOBAL_SETTINGS}"
         catIfExists "${USER_TOOLCHAINS}"
-        catIfExists "./github-actions/.github/resources/settings.xml"
 
     - uses: actions/setup-java@v4
       with:

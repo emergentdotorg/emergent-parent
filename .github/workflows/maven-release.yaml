@@ -1,13 +1,12 @@
 name: Maven Release
 
 on:
-  push:
-    branches:
-      - main
-      - master
+  #push:
+  #  branches:
+  #    - main
+  #    - master
 
-#on:
-#  workflow_dispatch:
+  workflow_dispatch:
 #    inputs:
 #      deploy-server:
 #        description: 'Distribution server-id'

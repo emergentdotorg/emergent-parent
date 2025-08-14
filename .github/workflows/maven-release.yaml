@@ -1,41 +1,25 @@
 name: Maven Release
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 on:
-  #push:
-  #  branches:
-  #    - main
-  #    - master
-
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
   workflow_dispatch:
-#    inputs:
-#      deploy-server:
-#        description: 'Distribution server-id'
-#        type: choice
-#        required: false
-#        default: emergent-nexus
-#        options:
-#          - central
-#          - github
-#          - emergent-github
-#          - emergent-nexus
-#      push-changes:
-#        description: 'Push commits during the maven release goal execution'
-#        type: boolean
-#        required: false
-#        default: true
-#      dry-run:
-#        description: 'Dry-run without commits or deploys'
-#        type: boolean
-#        required: false
-#        default: false
 
 jobs:
   invoke-release:
-    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@main
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
+    permissions:
+      contents: write
+    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@v3
     secrets: inherit
     with:
-      java-version: '11'
-      deploy-server: 'emergent-nexus'
+      maven-profiles: release
 
   process-results:
     runs-on: ubuntu-latest

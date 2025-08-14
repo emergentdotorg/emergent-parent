@@ -14,7 +14,6 @@ jobs:
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
-          tag_prefix: ''
           github_token: ${{ secrets.GITHUB_TOKEN }}
       #- name: Create a GitHub release
       #  uses: ncipollo/release-action@v1
@@ -22,3 +21,41 @@ jobs:
       #    tag: ${{ steps.tag_version.outputs.new_tag }}
       #    name: Release ${{ steps.tag_version.outputs.new_tag }}
       #    body: ${{ steps.tag_version.outputs.changelog }}
+
+#name: Tag Next Version
+#concurrency:
+#  group: ${{ github.workflow }}-${{ github.ref }}
+#  cancel-in-progress: true
+#
+#on:
+#  pull_request:
+#    types:
+#      - closed
+#    branches:
+#      - main
+#  workflow_dispatch:
+#
+#jobs:
+#  release:
+#    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#    env:
+#      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      TAG_PREFIX: 'v'
+#    steps:
+#
+#      - name: Checkout Sources
+#        uses: actions/checkout@v4
+#        with:
+#          fetch-depth: '0'
+#
+#      - uses: emergentdotorg/github-actions/git-init-user@v3
+#
+#      - name: Tag Latest
+#        id: tag_latest
+#        uses: ./.github/actions/tag-release@main
+#        with:
+#          github-token: ${{ env.GH_TOKEN }}
+#          sync-major-tag: 'true'

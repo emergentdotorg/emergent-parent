@@ -6,6 +6,7 @@
   <groupId>org.emergent.maven.parent</groupId>
   <artifactId>emergent-parent</artifactId>
   <version>0.5.1-SNAPSHOT</version>
+
   <packaging>pom</packaging>
 
   <name>Emergent.org</name>
@@ -49,12 +50,12 @@
     <toolchainsJdkVersionRange>[1.8,9)</toolchainsJdkVersionRange>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <emergentParentResourcesVersion>${project.version}</emergentParentResourcesVersion>
     <surefire.version>3.5.3</surefire.version>
     <version.build-helper-maven-plugin>3.6.0</version.build-helper-maven-plugin>
     <version.central-publishing-maven-plugin>0.8.0</version.central-publishing-maven-plugin>
     <version.duplicate-finder-maven-plugin>2.0.1</version.duplicate-finder-maven-plugin>
     <version.flatten-maven-plugin>1.7.1</version.flatten-maven-plugin>
-    <version.git-versioner-maven-plugin>0.11.0</version.git-versioner-maven-plugin>
     <version.jacoco-maven-plugin>0.8.13</version.jacoco-maven-plugin>
     <version.jib-maven-plugin>3.4.5</version.jib-maven-plugin>
     <version.maven-antrun-plugin>3.1.0</version.maven-antrun-plugin>
@@ -84,7 +85,6 @@
     <version.maven-surefire>${surefire.version}</version.maven-surefire>
     <version.maven-toolchains-plugin>3.2.0</version.maven-toolchains-plugin>
     <version.maven-war-plugin>3.4.0</version.maven-war-plugin>
-    <version.sortpom-maven-plugin>3.5.1</version.sortpom-maven-plugin>
     <version.versions-maven-plugin>2.18.0</version.versions-maven-plugin>
   </properties>
 

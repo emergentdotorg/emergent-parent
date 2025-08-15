@@ -16,8 +16,9 @@
     <revision>0.1.0-SNAPSHOT</revision>
     <project.build.outputTimestamp>2025-01-01T00:00:00Z</project.build.outputTimestamp>
     -->
-    <emergentParentResourcesVersion>${project.version}</emergentParentResourcesVersion>
     <jibToImagePrefix />
+    <version.sortpom-maven-plugin>3.5.1</version.sortpom-maven-plugin>
+    <version.git-versioner-maven-plugin>0.11.0</version.git-versioner-maven-plugin>
   </properties>
 
   <build>

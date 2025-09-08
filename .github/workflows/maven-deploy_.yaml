@@ -101,5 +101,5 @@ jobs:
           deploy-release-url: ${{ steps.resolve_vars.outputs.deploy-release-url }}
           deploy-snapshot-url: ${{ steps.resolve_vars.outputs.deploy-snapshot-url }}
           gpg-passphrase: ${{ secrets.maven_gpg_passphrase }}
-          gpg-private-key: ${{ secrets.maven_gpg_private_key }}
+          gpg-private-key: ${{ secrets.maven_gpg_key }}
 

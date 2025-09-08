@@ -56,4 +56,4 @@ jobs:
         shell: bash
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
-        run: mvn -B --no-transfer-progress clean verify -e
+        run: mvn -B -ntp clean verify -e -X

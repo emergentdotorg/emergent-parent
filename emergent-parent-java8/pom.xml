@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.emergent.maven.parent</groupId>
+    <artifactId>emergent-parent</artifactId>
+    <version>0.5.9-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>emergent-parent-java8</artifactId>
+  <packaging>pom</packaging>
+
+  <properties>
+    <maven.compiler.target>8</maven.compiler.target>
+    <toolchainsJdkVersionRange>[1.8,9)</toolchainsJdkVersionRange>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>targeting-java8</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-toolchains-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>select-jdk-toolchain</goal>
+                </goals>
+                <configuration>
+                  <version>${toolchainsJdkVersionRange}</version>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

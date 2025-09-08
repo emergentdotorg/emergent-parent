@@ -42,11 +42,11 @@
   </scm>
 
   <properties>
-    <maven.compiler.target>8</maven.compiler.target>
-    <maven.compiler.source>${maven.compiler.target}</maven.compiler.source>
-    <minimalJavaBuildVersion>${maven.compiler.target}</minimalJavaBuildVersion>
+    <maven.compiler.release>8</maven.compiler.release>
+    <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
+    <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
+    <minimalJavaBuildVersion>${maven.compiler.release}</minimalJavaBuildVersion>
     <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
-    <toolchainsJdkVersionRange>[1.8,9)</toolchainsJdkVersionRange>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <emergentParentResourcesVersion>${project.version}</emergentParentResourcesVersion>
@@ -333,20 +333,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-toolchains-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>select-jdk-toolchain</goal>
-            </goals>
-            <configuration>
-              <version>${toolchainsJdkVersionRange}</version>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -391,21 +377,6 @@
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-              <notimestamp>true</notimestamp>
-            </configuration>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <executions>
               <execution>
@@ -420,29 +391,23 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <notimestamp>true</notimestamp>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>toolchain-java9plus</id>
-      <activation>
-        <property>
-          <name>maven.compiler.target</name>
-          <value>!8</value>
-        </property>
-      </activation>
-      <properties>
-        <toolchainsJdkVersionRange>${maven.compiler.target}.+</toolchainsJdkVersionRange>
-      </properties>
-    </profile>
-    <profile>
-      <id>maven-compiler-release</id>
-      <activation>
-        <jdk>[9,)</jdk>
-      </activation>
-      <properties>
-        <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
-      </properties>
     </profile>
     <profile>
       <id>central-distmgt</id>
@@ -458,9 +423,6 @@
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
             <extensions>true</extensions>
-            <configuration>
-              <publishingServerId>${env.DEPLOY_SERVER}</publishingServerId>
-            </configuration>
           </plugin>
         </plugins>
       </build>

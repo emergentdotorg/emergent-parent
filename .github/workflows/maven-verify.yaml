@@ -15,4 +15,4 @@ jobs:
     uses: ./.github/workflows/maven-verify_.yaml
     secrets: inherit
     with:
-      java-version: '8'
+      java-version: '17'

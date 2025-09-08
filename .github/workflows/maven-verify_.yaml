@@ -11,6 +11,9 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      MAVEN_GPG_KEY: ${{ secrets.maven_gpg_key }}
+      MAVEN_GPG_PASSPHRASE: ${{ secrets.maven_gpg_passphrase }}
     steps:
 
       - uses: actions/checkout@v4
@@ -27,6 +30,7 @@ jobs:
 
       - name: 'Verify Java environment variables'
         shell: bash
+        # language="shell script"
         run: |
           java -version
           echo "JAVA_HOME: $JAVA_HOME"
@@ -45,10 +49,11 @@ jobs:
         with:
           maven-version: 3.9.9
 
+      - name: Dump Context
+        uses: emergentdotorg/github-actions/dump-context@v3
+
       - name: Invoke Maven Tests
         shell: bash
         env:
-          MAVEN_GPG_KEY: ${{ secrets.maven_gpg_key }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.maven_gpg_passphrase }}
           GITHUB_WORKSPACE: ${{ github.workspace }}
         run: mvn -B --no-transfer-progress clean verify -e

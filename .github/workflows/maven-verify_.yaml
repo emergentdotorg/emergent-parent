@@ -56,4 +56,4 @@ jobs:
         shell: bash
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
-        run: mvn -B -ntp -Dgpg.useagent=false clean verify -e -X
+        run: mvn -B -ntp clean verify -e

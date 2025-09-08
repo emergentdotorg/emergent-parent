@@ -28,16 +28,15 @@
 
   <developers>
     <developer>
+      <id>pwoodworth</id>
       <name>Patrick Woodworth</name>
       <email>patrick@woodworth.org</email>
-      <organization>Emergent.org</organization>
-      <organizationUrl>https://emergent.org</organizationUrl>
     </developer>
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/emergentdotorg/maven-emergent-parent</connection>
-    <developerConnection>scm:git:git@github.com:emergentdotorg/maven-emergent-parent</developerConnection>
+    <connection>scm:git:https://github.com/emergentdotorg/maven-emergent-parent.git</connection>
+    <developerConnection>scm:ssh:git@github.com:emergentdotorg/maven-emergent-parent.git</developerConnection>
     <url>https://github.com/emergentdotorg/maven-emergent-parent/tree/${project.scm.tag}</url>
     <tag>HEAD</tag>
   </scm>
@@ -403,33 +402,7 @@
 
   <profiles>
     <profile>
-      <id>toolchain-java9plus</id>
-      <activation>
-        <property>
-          <name>maven.compiler.target</name>
-          <value>!8</value>
-        </property>
-      </activation>
-      <properties>
-        <toolchainsJdkVersionRange>${maven.compiler.target}.+</toolchainsJdkVersionRange>
-      </properties>
-    </profile>
-    <profile>
-      <id>maven-compiler-release</id>
-      <activation>
-        <jdk>[9,)</jdk>
-      </activation>
-      <properties>
-        <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
-      </properties>
-    </profile>
-    <profile>
       <id>release</id>
-      <activation>
-        <property>
-          <name>env.CI</name>
-        </property>
-      </activation>
       <build>
         <plugins>
           <plugin>
@@ -458,10 +431,6 @@
                 </goals>
                 <phase>verify</phase>
                 <configuration>
-                  <!-- Requires the following
-                  MAVEN_GPG_PASSPHRASE: ${{ secrets.RELEASES_GPG_PASSPHRASE }}
-                  MAVEN_GPG_KEY: ${{ secrets.RELEASES_GPG_PRIVATE_KEY }}
-                  -->
                   <signer>bc</signer>
                 </configuration>
               </execution>
@@ -469,6 +438,27 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>toolchain-java9plus</id>
+      <activation>
+        <property>
+          <name>maven.compiler.target</name>
+          <value>!8</value>
+        </property>
+      </activation>
+      <properties>
+        <toolchainsJdkVersionRange>${maven.compiler.target}.+</toolchainsJdkVersionRange>
+      </properties>
+    </profile>
+    <profile>
+      <id>maven-compiler-release</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>${maven.compiler.target}</maven.compiler.release>
+      </properties>
     </profile>
     <profile>
       <id>central-distmgt</id>

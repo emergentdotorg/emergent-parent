@@ -119,7 +119,7 @@ jobs:
 
       - name: Dump Context Java
         id: dump_context
-        uses: emergentdotorg/github-actions/dump-context@v2
+        uses: emergentdotorg/github-actions/dump-context@v3
 
   setup-java:
     if: ${{ inputs.op == 'setup-java' }}
@@ -136,7 +136,7 @@ jobs:
 
       - name: Setup Java
         id: setup_java
-        uses: emergentdotorg/github-actions/setup-java-env@v2
+        uses: emergentdotorg/github-actions/setup-java-env@v3
         with:
           deploy-server: 'central'
           deploy-username-env: CENTRAL_ACTOR
@@ -144,7 +144,7 @@ jobs:
           github-username-env: GITHUB_ACTOR
           github-password-env: GITHUB_TOKEN
           gpg-passphrase-env: GPG_PASSPHRASE
-          gpg-private-key: ${{ secrets.maven_gpg_private_key }}
+          gpg-private-key: ${{ secrets.maven_gpg_key }}
 
       - name: 'Verify Java and Maven'
         if: ${{ success() }}

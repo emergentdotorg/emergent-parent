@@ -54,7 +54,6 @@
     <version.build-helper-maven-plugin>3.6.0</version.build-helper-maven-plugin>
     <version.central-publishing-maven-plugin>0.8.0</version.central-publishing-maven-plugin>
     <version.duplicate-finder-maven-plugin>2.0.1</version.duplicate-finder-maven-plugin>
-    <version.flatten-maven-plugin>1.7.1</version.flatten-maven-plugin>
     <version.jacoco-maven-plugin>0.8.13</version.jacoco-maven-plugin>
     <version.jib-maven-plugin>3.4.5</version.jib-maven-plugin>
     <version.maven-antrun-plugin>3.1.0</version.maven-antrun-plugin>
@@ -244,11 +243,6 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>${version.build-helper-maven-plugin}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>flatten-maven-plugin</artifactId>
-          <version>${version.flatten-maven-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

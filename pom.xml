@@ -42,10 +42,6 @@
   </scm>
 
   <properties>
-    <maven.compiler.release>8</maven.compiler.release>
-    <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
-    <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
-    <minimalJavaBuildVersion>${maven.compiler.release}</minimalJavaBuildVersion>
     <minimalMavenBuildVersion>3.6.3</minimalMavenBuildVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -281,19 +277,6 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
-            <id>enforce-requireJavaVersion</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireJavaVersion>
-                  <version>${minimalJavaBuildVersion}</version>
-                </requireJavaVersion>
-              </rules>
-            </configuration>
-          </execution>
-          <execution>
             <id>enforce-requireMavenVersion</id>
             <goals>
               <goal>enforce</goal>
@@ -345,25 +328,6 @@
               <ignoreNonCompile>true</ignoreNonCompile>
               <outputXML>true</outputXML>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <goals>
-              <goal>report</goal>
-            </goals>
-            <phase>prepare-package</phase>
           </execution>
         </executions>
       </plugin>

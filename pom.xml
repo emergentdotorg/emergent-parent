@@ -336,6 +336,43 @@
 
   <profiles>
     <profile>
+      <id>em-flatten</id>
+      <build>
+        <pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>flatten-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>flatten.clean</id>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+                <phase>clean</phase>
+              </execution>
+              <execution>
+                <id>flatten</id>
+                <goals>
+                  <goal>flatten</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <flattenMode>ossrh</flattenMode>
+                  <pomElements>
+                    <parent>flatten</parent>
+                    <profiles>flatten</profiles>
+                  </pomElements>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
       <id>release</id>
       <build>
         <plugins>

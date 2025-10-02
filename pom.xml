@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -50,6 +51,7 @@
     <version.build-helper-maven-plugin>3.6.0</version.build-helper-maven-plugin>
     <version.central-publishing-maven-plugin>0.8.0</version.central-publishing-maven-plugin>
     <version.duplicate-finder-maven-plugin>2.0.1</version.duplicate-finder-maven-plugin>
+    <version.exec-maven-plugin>3.5.1</version.exec-maven-plugin>
     <version.flatten-maven-plugin>1.7.3</version.flatten-maven-plugin>
     <version.jacoco-maven-plugin>0.8.13</version.jacoco-maven-plugin>
     <version.jib-maven-plugin>3.4.5</version.jib-maven-plugin>
@@ -237,31 +239,13 @@
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${version.exec-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>flatten-maven-plugin</artifactId>
-          <version>${version.flatten-maven-plugin}}</version>
-          <executions>
-            <execution>
-              <id>flatten.clean</id>
-              <goals>
-                <goal>clean</goal>
-              </goals>
-              <phase>clean</phase>
-            </execution>
-            <execution>
-              <id>flatten</id>
-              <goals>
-                <goal>flatten</goal>
-              </goals>
-              <phase>process-resources</phase>
-              <configuration>
-                <flattenMode>ossrh</flattenMode>
-                <pomElements>
-                  <parent>flatten</parent>
-                  <profiles>flatten</profiles>
-                </pomElements>
-              </configuration>
-            </execution>
-          </executions>
+          <version>${version.flatten-maven-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -325,7 +309,7 @@
             </goals>
             <configuration>
               <rules>
-                <requireUpperBoundDeps />
+                <requireUpperBoundDeps/>
               </rules>
             </configuration>
           </execution>
@@ -418,6 +402,42 @@
             <extensions>true</extensions>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>em-flatten</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>flatten-maven-plugin</artifactId>
+              <version>${version.flatten-maven-plugin}</version>
+              <executions>
+                <execution>
+                  <id>flatten.clean</id>
+                  <goals>
+                    <goal>clean</goal>
+                  </goals>
+                  <phase>clean</phase>
+                </execution>
+                <execution>
+                  <id>flatten</id>
+                  <goals>
+                    <goal>flatten</goal>
+                  </goals>
+                  <phase>process-resources</phase>
+                  <configuration>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <pomElements>
+                      <parent>flatten</parent>
+                    </pomElements>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
   </profiles>

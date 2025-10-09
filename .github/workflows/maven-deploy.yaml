@@ -29,7 +29,6 @@ jobs:
       java-version: 17
       deploy-server: ${{ inputs.deploy-server }}
       release-branches: 'main,master,release.*'
-      maven-profiles: 'flatten'
 
   process-results:
     runs-on: ubuntu-latest

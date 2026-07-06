@@ -1,10 +1,11 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI agents when working with code in this repository.
 
 ## Project Overview
 
-This repository contains the **Emergent.org Parent POM**, a standardized Maven parent POM configuration published by Emergent.org. It provides plugin management and configuration for Java projects.
+This repository contains the **Emergent.org Parent POM**, a standardized Maven parent POM configuration published by
+Emergent.org. It provides plugin management and configuration for Java projects.
 
 **Group ID:** `org.emergent.maven.parent`
 **Artifact ID:** `emergent-parent`
@@ -16,13 +17,8 @@ This repository contains the **Emergent.org Parent POM**, a standardized Maven p
 The repository has a multi-module structure:
 
 - **`emergent-parent`** (root): Base parent POM with core plugin management
-  - **`emergent-parent-java`**: Extended parent for standard Java projects with additional configuration (sortpom, git-versioner, jib)
-  - **`emergent-parent-java-legacy`**: Parent for legacy Java projects, includes example modules
-    - `example-java8`: Example Java 8 project
-    - `example-java11`: Example Java 11 project
-  - **`emergent-parent-java8`**: Specialized parent for Java 8 projects with toolchain configuration
-
-The root POM packages a resources JAR containing `emergent-sortpom-order.xml` via the assembly plugin.
+  - **`emergent-resources`**: Common organizational resource files
+  - **`maven-parent`**: Extended parent for standard Java projects with additional configuration
 
 ## Common Commands
 

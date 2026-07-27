@@ -48,43 +48,44 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <version.build-helper-maven-plugin>3.6.1</version.build-helper-maven-plugin>
-    <version.central-publishing-maven-plugin>0.9.0</version.central-publishing-maven-plugin>
+    <version.central-publishing-maven-plugin>0.10.0</version.central-publishing-maven-plugin>
     <version.duplicate-finder-maven-plugin>2.0.1</version.duplicate-finder-maven-plugin>
-    <version.exec-maven-plugin>3.6.1</version.exec-maven-plugin>
+    <version.exec-maven-plugin>3.6.3</version.exec-maven-plugin>
     <version.flatten-maven-plugin>1.7.3</version.flatten-maven-plugin>
-    <version.jacoco-maven-plugin>0.8.13</version.jacoco-maven-plugin>
+    <version.jacoco-maven-plugin>0.8.15</version.jacoco-maven-plugin>
     <version.jib-maven-plugin>3.4.5</version.jib-maven-plugin>
     <version.license-maven-plugin>2.7.0</version.license-maven-plugin>
-    <version.maven-antrun-plugin>3.1.0</version.maven-antrun-plugin>
-    <version.maven-assembly-plugin>3.7.1</version.maven-assembly-plugin>
+    <version.maven-antrun-plugin>3.2.0</version.maven-antrun-plugin>
+    <version.maven-assembly-plugin>3.8.0</version.maven-assembly-plugin>
     <version.maven-checkstyle-plugin>3.6.0</version.maven-checkstyle-plugin>
     <version.maven-clean-plugin>3.5.0</version.maven-clean-plugin>
-    <version.maven-compiler-plugin>3.14.1</version.maven-compiler-plugin>
-    <version.maven-dependency-plugin>3.9.0</version.maven-dependency-plugin>
+    <version.maven-compiler-plugin>3.15.0</version.maven-compiler-plugin>
+    <version.maven-dependency-plugin>3.11.0</version.maven-dependency-plugin>
     <version.maven-deploy-plugin>3.1.4</version.maven-deploy-plugin>
     <version.maven-ear-plugin>3.4.0</version.maven-ear-plugin>
-    <version.maven-enforcer-plugin>3.6.2</version.maven-enforcer-plugin>
-    <version.maven-failsafe-plugin>3.5.4</version.maven-failsafe-plugin>
+    <version.maven-enforcer-plugin>3.6.3</version.maven-enforcer-plugin>
+    <version.maven-failsafe-plugin>3.5.5</version.maven-failsafe-plugin>
     <version.maven-gpg-plugin>3.2.8</version.maven-gpg-plugin>
     <version.maven-help-plugin>3.5.1</version.maven-help-plugin>
     <version.maven-install-plugin>3.1.4</version.maven-install-plugin>
-    <version.maven-invoker-plugin>3.9.1</version.maven-invoker-plugin>
-    <version.maven-jar-plugin>3.4.2</version.maven-jar-plugin>
+    <version.maven-invoker-plugin>3.10.0</version.maven-invoker-plugin>
+    <version.maven-jar-plugin>3.5.0</version.maven-jar-plugin>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
-    <version.maven-plugin-tools>3.15.1</version.maven-plugin-tools>
+    <version.maven-plugin-tools>3.15.2</version.maven-plugin-tools>
     <version.maven-project-info-reports-plugin>3.6.1</version.maven-project-info-reports-plugin>
-    <version.maven-release-plugin>3.1.1</version.maven-release-plugin>
-    <version.maven-resources-plugin>3.3.1</version.maven-resources-plugin>
+    <version.maven-release-plugin>3.3.1</version.maven-release-plugin>
+    <version.maven-resources-plugin>3.5.0</version.maven-resources-plugin>
     <version.maven-scm-plugin>2.2.1</version.maven-scm-plugin>
     <version.maven-scm-publish-plugin>3.3.0</version.maven-scm-publish-plugin>
-    <version.maven-shade-plugin>3.6.1</version.maven-shade-plugin>
-    <version.maven-source-plugin>3.3.1</version.maven-source-plugin>
-    <version.maven-surefire-plugin>3.5.4</version.maven-surefire-plugin>
-    <version.maven-surefire-report-plugin>3.5.4</version.maven-surefire-report-plugin>
+    <version.maven-shade-plugin>3.6.2</version.maven-shade-plugin>
+    <version.maven-source-plugin>3.4.0</version.maven-source-plugin>
+    <version.maven-surefire-plugin>3.5.5</version.maven-surefire-plugin>
+    <version.maven-surefire-report-plugin>3.5.5</version.maven-surefire-report-plugin>
     <version.maven-toolchains-plugin>3.2.0</version.maven-toolchains-plugin>
-    <version.maven-war-plugin>3.4.0</version.maven-war-plugin>
+    <version.maven-war-plugin>3.5.1</version.maven-war-plugin>
+    <version.rewrite-maven-plugin>6.43.0</version.rewrite-maven-plugin>
     <version.sortpom-maven-plugin>4.0.0</version.sortpom-maven-plugin>
-    <version.versions-maven-plugin>2.19.1</version.versions-maven-plugin>
+    <version.versions-maven-plugin>2.21.0</version.versions-maven-plugin>
   </properties>
 
   <build>
@@ -285,6 +286,11 @@
           <version>${version.jacoco-maven-plugin}</version>
         </plugin>
         <plugin>
+          <groupId>org.openrewrite.maven</groupId>
+          <artifactId>rewrite-maven-plugin</artifactId>
+          <version>${version.rewrite-maven-plugin}</version>
+        </plugin>
+        <plugin>
           <groupId>org.sonatype.central</groupId>
           <artifactId>central-publishing-maven-plugin</artifactId>
           <version>${version.central-publishing-maven-plugin}</version>
@@ -365,7 +371,7 @@
     </profile>
 
     <profile>
-      <id>central-distmgt</id>
+      <id>deploy-central</id>
       <activation>
         <property>
           <name>env.DEPLOY_SERVER</name>
@@ -383,6 +389,44 @@
       </build>
     </profile>
 
+    <profile>
+      <id>versions-sans-4</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>versions-maven-plugin</artifactId>
+              <version>${version.versions-maven-plugin}</version>
+              <inherited>false</inherited>
+              <configuration>
+                <generateBackupPoms>false</generateBackupPoms>
+                <ruleSet>
+                  <rules>
+                    <rule>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-*-plugin</artifactId>
+                      <ignoreVersions>
+                        <ignoreVersion>
+                          <type>regex</type>
+                          <version>4.0.0-beta-\d</version>
+                        </ignoreVersion>
+                        <ignoreVersion>
+                          <type>regex</type>
+                          <version>.*-M\d</version>
+                        </ignoreVersion>
+                      </ignoreVersions>
+                    </rule>
+                  </rules>
+                </ruleSet>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+
+    <!--
     <profile>
       <id>flatten</id>
       <build>
@@ -407,11 +451,9 @@
                 <configuration>
                   <updatePomFile>true</updatePomFile>
                   <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                  <!--
                   <pomElements>
                     <parent>flatten</parent>
                   </pomElements>
-                  -->
                 </configuration>
               </execution>
             </executions>
@@ -419,5 +461,6 @@
         </plugins>
       </build>
     </profile>
+    -->
   </profiles>
 </project>

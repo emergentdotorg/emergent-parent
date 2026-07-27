@@ -29,7 +29,7 @@ jobs:
     secrets: inherit
     with:
       java-version: 17
-      deploy-server: ${{ inputs.deploy-server || 'emergent-nexus' }}
+      deploy-server: ${{ inputs.deploy-server || 'central' }}
       maven-profiles: 'version-emergent-resources'
 
   process-results:

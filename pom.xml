@@ -4,7 +4,7 @@
 
   <groupId>org.emergent.parent</groupId>
   <artifactId>emergent-parent</artifactId>
-  <version>${revision}</version>
+  <version>0.0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Emergent.org</name>
@@ -47,11 +47,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <revision>0.1-SNAPSHOT</revision>
     <version.build-helper-maven-plugin>3.6.1</version.build-helper-maven-plugin>
     <version.central-publishing-maven-plugin>0.9.0</version.central-publishing-maven-plugin>
     <version.duplicate-finder-maven-plugin>2.0.1</version.duplicate-finder-maven-plugin>
-    <version.emergent-parent>${revision}</version.emergent-parent>
     <version.exec-maven-plugin>3.6.1</version.exec-maven-plugin>
     <version.flatten-maven-plugin>1.7.3</version.flatten-maven-plugin>
     <version.jacoco-maven-plugin>0.8.13</version.jacoco-maven-plugin>
@@ -125,22 +123,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${version.maven-checkstyle-plugin}</version>
-          <configuration>
-            <configLocation>emergent-checkstyle-checks.xml</configLocation>
-            <suppressionsLocation>emergent-checkstyle-suppressions.xml</suppressionsLocation>
-            <consoleOutput>true</consoleOutput>
-            <failsOnError>true</failsOnError>
-            <linkXRef>false</linkXRef>
-          </configuration>
-          <executions>
-            <execution>
-              <id>validate</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <phase>validate</phase>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -381,6 +363,7 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>central-distmgt</id>
       <activation>
@@ -399,6 +382,7 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>flatten</id>
       <build>

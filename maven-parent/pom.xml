@@ -13,10 +13,6 @@
 
   <name>Maven Parent</name>
 
-  <properties>
-    <version.emergent-resources>0.0.5-SNAPSHOT</version.emergent-resources>
-  </properties>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -31,6 +27,7 @@
             </dependency>
           </dependencies>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
@@ -42,6 +39,7 @@
             </dependency>
           </dependencies>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
@@ -59,6 +57,7 @@
             </execution>
           </executions>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
@@ -70,12 +69,13 @@
               </goals>
               <configuration>
                 <rules>
-                  <requireUpperBoundDeps/>
+                  <requireUpperBoundDeps />
                 </rules>
               </configuration>
             </execution>
           </executions>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -87,6 +87,7 @@
             </additionalJOptions>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
@@ -98,30 +99,6 @@
               </goals>
             </execution>
           </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>versions-maven-plugin</artifactId>
-          <version>${version.versions-maven-plugin}</version>
-          <configuration>
-            <generateBackupPoms>false</generateBackupPoms>
-            <!--
-            <ruleSet>
-              <rules>
-                <rule>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-*-plugin</artifactId>
-                  <ignoreVersions>
-                    <ignoreVersion>
-                      <type>regex</type>
-                      <version>4.0.0-beta-\d</version>
-                    </ignoreVersion>
-                  </ignoreVersions>
-                </rule>
-              </rules>
-            </ruleSet>
-            -->
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

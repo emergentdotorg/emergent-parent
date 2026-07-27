@@ -33,13 +33,13 @@
   </developers>
 
   <modules>
-    <module>maven-parent</module>
     <module>emergent-resources</module>
+    <module>maven-parent</module>
   </modules>
 
   <scm>
     <connection>scm:git:https://github.com/emergentdotorg/emergent-parent</connection>
-    <developerConnection>scm:ssh:git@github.com:emergentdotorg/emergent-parent</developerConnection>
+    <developerConnection>scm:git:ssh://git@github.com:emergentdotorg/emergent-parent</developerConnection>
     <tag>HEAD</tag>
     <url>https://github.com/emergentdotorg/emergent-parent/tree/${project.scm.tag}</url>
   </scm>
@@ -50,6 +50,7 @@
     <version.build-helper-maven-plugin>3.6.1</version.build-helper-maven-plugin>
     <version.central-publishing-maven-plugin>0.10.0</version.central-publishing-maven-plugin>
     <version.duplicate-finder-maven-plugin>2.0.1</version.duplicate-finder-maven-plugin>
+    <version.emergent-resources>0.0.5-SNAPSHOT</version.emergent-resources>
     <version.exec-maven-plugin>3.6.3</version.exec-maven-plugin>
     <version.flatten-maven-plugin>1.7.3</version.flatten-maven-plugin>
     <version.jacoco-maven-plugin>0.8.15</version.jacoco-maven-plugin>
@@ -299,9 +300,63 @@
     </pluginManagement>
 
     <plugins>
+      <!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/resources.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>single</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      -->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>enforce-requireMavenVersion</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.6.3</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <preparationGoals>clean versions:set-property verify</preparationGoals>
+          <completionGoals>versions:set-property</completionGoals>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
+        <inherited>false</inherited>
         <executions>
           <execution>
             <id>copy-basedir-to-metainf</id>
@@ -324,6 +379,27 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <generateBackupPoms>false</generateBackupPoms>
+          <ruleSet>
+            <rules>
+              <rule>
+                <ignoreVersions>
+                  <ignoreVersion>
+                    <type>regex</type>
+                    <version>.*-(M|SNAPSHOT|alpha|beta|rc)(-)?\d*</version>
+                  </ignoreVersion>
+                </ignoreVersions>
+              </rule>
+            </rules>
+          </ruleSet>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -390,7 +466,7 @@
     </profile>
 
     <profile>
-      <id>versions-sans-4</id>
+      <id>version-emergent-resources</id>
       <build>
         <pluginManagement>
           <plugins>
@@ -398,27 +474,9 @@
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>versions-maven-plugin</artifactId>
               <version>${version.versions-maven-plugin}</version>
-              <inherited>false</inherited>
               <configuration>
-                <generateBackupPoms>false</generateBackupPoms>
-                <ruleSet>
-                  <rules>
-                    <rule>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-*-plugin</artifactId>
-                      <ignoreVersions>
-                        <ignoreVersion>
-                          <type>regex</type>
-                          <version>4.0.0-beta-\d</version>
-                        </ignoreVersion>
-                        <ignoreVersion>
-                          <type>regex</type>
-                          <version>.*-M\d</version>
-                        </ignoreVersion>
-                      </ignoreVersions>
-                    </rule>
-                  </rules>
-                </ruleSet>
+                <property>version.emergent-resources</property>
+                <newVersion>${project.version}</newVersion>
               </configuration>
             </plugin>
           </plugins>

@@ -30,6 +30,7 @@ jobs:
     with:
       java-version: 17
       deploy-server: ${{ inputs.deploy-server || 'emergent-nexus' }}
+      maven-profiles: 'version-emergent-resources'
 
   process-results:
     name: Process Results

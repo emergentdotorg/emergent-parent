@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.emergent.parent</groupId>
@@ -7,7 +7,7 @@
   <version>0.0.6-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Emergent.org</name>
+  <name>Emergent.org Parent</name>
   <description>The Emergent.org parent POM provides a standardized configuration.</description>
   <url>https://github.com/emergentdotorg</url>
 
@@ -38,8 +38,8 @@
   </modules>
 
   <scm>
-    <connection>scm:git:https://github.com/emergentdotorg/emergent-parent</connection>
-    <developerConnection>scm:git:ssh://git@github.com:emergentdotorg/emergent-parent</developerConnection>
+    <connection>scm:git:https://github.com/emergentdotorg/emergent-parent.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:emergentdotorg/emergent-parent.git</developerConnection>
     <tag>HEAD</tag>
     <url>https://github.com/emergentdotorg/emergent-parent/tree/${project.scm.tag}</url>
   </scm>
@@ -300,28 +300,6 @@
     </pluginManagement>
 
     <plugins>
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <inherited>false</inherited>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/resources.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>single</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -341,16 +319,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <inherited>false</inherited>
-        <configuration>
-          <preparationGoals>clean versions:set-property verify</preparationGoals>
-          <completionGoals>versions:set-property</completionGoals>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -387,18 +355,7 @@
         <inherited>false</inherited>
         <configuration>
           <generateBackupPoms>false</generateBackupPoms>
-          <ruleSet>
-            <rules>
-              <rule>
-                <ignoreVersions>
-                  <ignoreVersion>
-                    <type>regex</type>
-                    <version>.*-(M|SNAPSHOT|alpha|beta|rc)(-)?\d*</version>
-                  </ignoreVersion>
-                </ignoreVersions>
-              </rule>
-            </rules>
-          </ruleSet>
+          <rulesUri>file://${maven.multiModuleProjectDirectory}/emergent-versions-rules.xml</rulesUri>
         </configuration>
       </plugin>
     </plugins>
@@ -430,6 +387,7 @@
               </execution>
             </executions>
           </plugin>
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -439,6 +397,34 @@
                 <goals>
                   <goal>jar</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <inherited>false</inherited>
+            <configuration>
+              <preparationGoals>clean versions:set-property@resources-version verify</preparationGoals>
+              <completionGoals>versions:set-property@resources-version</completionGoals>
+            </configuration>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+            <inherited>false</inherited>
+            <executions>
+              <execution>
+                <id>resources-version</id>
+                <goals>
+                  <goal>set-property</goal>
+                </goals>
+                <configuration>
+                  <property>version.emergent-resources</property>
+                  <newVersion>${project.version}</newVersion>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -464,61 +450,5 @@
         </plugins>
       </build>
     </profile>
-
-    <profile>
-      <id>version-emergent-resources</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>versions-maven-plugin</artifactId>
-              <version>${version.versions-maven-plugin}</version>
-              <configuration>
-                <property>version.emergent-resources</property>
-                <newVersion>${project.version}</newVersion>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-
-    <!--
-    <profile>
-      <id>flatten</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>flatten-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>clean</id>
-                <goals>
-                  <goal>clean</goal>
-                </goals>
-                <phase>clean</phase>
-              </execution>
-              <execution>
-                <id>flatten</id>
-                <goals>
-                  <goal>flatten</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <updatePomFile>true</updatePomFile>
-                  <flattenMode>resolveCiFriendliesOnly</flattenMode>
-                  <pomElements>
-                    <parent>flatten</parent>
-                  </pomElements>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    -->
   </profiles>
 </project>

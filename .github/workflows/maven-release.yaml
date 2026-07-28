@@ -25,12 +25,11 @@ on:
 jobs:
   maven-release:
     name: Maven Release
-    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@v4
+    uses: emergentdotorg/github-actions/.github/workflows/maven-release.yaml@v5
     secrets: inherit
     with:
       java-version: 17
       deploy-server: ${{ inputs.deploy-server || 'central' }}
-      maven-profiles: 'version-emergent-resources'
 
   process-results:
     name: Process Results

@@ -23,7 +23,7 @@
             <dependency>
               <groupId>org.emergent.parent</groupId>
               <artifactId>emergent-resources</artifactId>
-              <version>${version.emergent-resources}</version>
+              <version>${project.version}</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -100,7 +100,7 @@
             <dependency>
               <groupId>org.emergent.parent</groupId>
               <artifactId>emergent-resources</artifactId>
-              <version>${version.emergent-resources}</version>
+              <version>${project.version}</version>
             </dependency>
           </dependencies>
         </plugin>

@@ -4,7 +4,7 @@
 
   <groupId>org.emergent.parent</groupId>
   <artifactId>emergent-parent</artifactId>
-  <version>0.0.6-SNAPSHOT</version>
+  <version>0.9.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Emergent.org Parent</name>
@@ -50,7 +50,7 @@
     <version.build-helper-maven-plugin>3.6.1</version.build-helper-maven-plugin>
     <version.central-publishing-maven-plugin>0.10.0</version.central-publishing-maven-plugin>
     <version.duplicate-finder-maven-plugin>2.0.1</version.duplicate-finder-maven-plugin>
-    <version.emergent-resources>0.0.6-SNAPSHOT</version.emergent-resources>
+    <version.emergent-resources>0.9.0-SNAPSHOT</version.emergent-resources>
     <version.exec-maven-plugin>3.6.3</version.exec-maven-plugin>
     <version.flatten-maven-plugin>1.7.3</version.flatten-maven-plugin>
     <version.jacoco-maven-plugin>0.8.15</version.jacoco-maven-plugin>

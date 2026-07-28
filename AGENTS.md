@@ -4,21 +4,20 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## Project Overview
 
-This repository contains the **Emergent.org Parent POM**, a standardized Maven parent POM configuration published by
+This repository contains the **Emergent.org Maven Parent POM**, a standardized Maven parent POM configuration published by
 Emergent.org. It provides plugin management and configuration for Java projects.
 
 **Group ID:** `org.emergent.maven.parent`
-**Artifact ID:** `emergent-parent`
-**Current Version:** `0.5.10-SNAPSHOT`
+**Artifact ID:** `maven-parent`
+**Current Version:** `1.0.0-SNAPSHOT`
 **License:** Apache License, Version 2.0
 
 ## Project Structure
 
 The repository has a multi-module structure:
 
-- **`emergent-parent`** (root): Base parent POM with core plugin management
-  - **`emergent-resources`**: Common organizational resource files
-  - **`maven-parent`**: Extended parent for standard Java projects with additional configuration
+- **`maven-parent`** (root): Base parent POM with core plugin management
+  - **`java-parent`**: Extended parent for standard Java projects with additional configuration
 
 ## Common Commands
 

@@ -13,14 +13,6 @@ on:
       - '**/src/**'
       - '**/pom.xml'
   workflow_dispatch:
-    inputs:
-      deploy-server:
-        description: 'Distribution server-id'
-        type: choice
-        default: emergent-nexus
-        options:
-          - central
-          - emergent-nexus
 
 jobs:
   maven-release:
@@ -29,7 +21,6 @@ jobs:
     secrets: inherit
     with:
       java-version: 17
-      deploy-server: ${{ inputs.deploy-server || 'central' }}
 
   process-results:
     name: Process Results

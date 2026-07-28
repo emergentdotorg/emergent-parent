@@ -8,11 +8,12 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>/org/emergent/</outputDirectory>
       <lineEnding>lf</lineEnding>
       <directory>.</directory>
       <includes>
-        <include>emergent-*.xml</include>
+        <include>LICENSE</include>
+        <include>version-rules.xml</include>
       </includes>
     </fileSet>
   </fileSets>

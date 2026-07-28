@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.emergent.parent</groupId>
-  <artifactId>emergent-parent</artifactId>
-  <version>0.9.1-SNAPSHOT</version>
+  <groupId>org.emergent.maven.parent</groupId>
+  <artifactId>maven-parent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Emergent.org Parent</name>
-  <description>The Emergent.org parent POM provides a standardized configuration.</description>
+  <name>Emergent.org Maven Parent</name>
+  <description>The Emergent.org Maven Parent POM provides a standardized configuration.</description>
   <url>https://github.com/emergentdotorg</url>
 
   <organization>
@@ -33,8 +33,7 @@
   </developers>
 
   <modules>
-    <module>emergent-resources</module>
-    <module>maven-parent</module>
+    <module>java-parent</module>
   </modules>
 
   <scm>
@@ -68,48 +67,34 @@
     <version.maven-gpg-plugin>3.2.8</version.maven-gpg-plugin>
     <version.maven-help-plugin>3.5.1</version.maven-help-plugin>
     <version.maven-install-plugin>3.1.4</version.maven-install-plugin>
-    <version.maven-invoker-plugin>3.10.0</version.maven-invoker-plugin>
+    <version.maven-invoker-plugin>3.10.1</version.maven-invoker-plugin>
     <version.maven-jar-plugin>3.5.0</version.maven-jar-plugin>
     <version.maven-javadoc-plugin>3.12.0</version.maven-javadoc-plugin>
+    <version.maven-jxr-plugin>3.6.0</version.maven-jxr-plugin>
     <version.maven-plugin-tools>3.15.2</version.maven-plugin-tools>
+    <version.maven-pmd-plugin>3.28.0</version.maven-pmd-plugin>
     <version.maven-project-info-reports-plugin>3.6.1</version.maven-project-info-reports-plugin>
     <version.maven-release-plugin>3.3.1</version.maven-release-plugin>
     <version.maven-resources-plugin>3.5.0</version.maven-resources-plugin>
     <version.maven-scm-plugin>2.2.1</version.maven-scm-plugin>
     <version.maven-scm-publish-plugin>3.3.0</version.maven-scm-publish-plugin>
     <version.maven-shade-plugin>3.6.2</version.maven-shade-plugin>
+    <version.maven-site-plugin>3.22.0</version.maven-site-plugin>
     <version.maven-source-plugin>3.4.0</version.maven-source-plugin>
     <version.maven-surefire-plugin>3.5.5</version.maven-surefire-plugin>
     <version.maven-surefire-report-plugin>3.5.5</version.maven-surefire-report-plugin>
     <version.maven-toolchains-plugin>3.2.0</version.maven-toolchains-plugin>
     <version.maven-war-plugin>3.5.1</version.maven-war-plugin>
+    <version.mrm-maven-plugin>1.7.1</version.mrm-maven-plugin>
     <version.rewrite-maven-plugin>6.43.0</version.rewrite-maven-plugin>
-    <version.sortpom-maven-plugin>4.0.0</version.sortpom-maven-plugin>
+    <version.sisu-maven-plugin>1.0.1</version.sisu-maven-plugin>
+    <version.taglist-maven-plugin>3.2.2</version.taglist-maven-plugin>
     <version.versions-maven-plugin>2.21.0</version.versions-maven-plugin>
   </properties>
 
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>com.github.ekryd.sortpom</groupId>
-          <artifactId>sortpom-maven-plugin</artifactId>
-          <version>${version.sortpom-maven-plugin}</version>
-          <configuration>
-            <createBackupFile>false</createBackupFile>
-            <expandEmptyElements>false</expandEmptyElements>
-            <lineSeparator>\n</lineSeparator>
-            <sortDependencies>scope,groupId,artifactId</sortDependencies>
-            <sortDependencyExclusions>groupId,artifactId</sortDependencyExclusions>
-            <sortDependencyManagement>scope,groupId,artifactId</sortDependencyManagement>
-            <sortExecutions>true</sortExecutions>
-            <sortModules>true</sortModules>
-            <sortOrderFile>emergent-sortpom-order.xml</sortOrderFile>
-            <sortPlugins>groupId,artifactId</sortPlugins>
-            <sortProperties>true</sortProperties>
-            <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement>
-          </configuration>
-        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
@@ -192,6 +177,11 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jxr-plugin</artifactId>
+          <version>${version.maven-jxr-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
           <version>${version.maven-plugin-tools}</version>
         </plugin>
@@ -199,6 +189,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-report-plugin</artifactId>
           <version>${version.maven-plugin-tools}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>${version.maven-pmd-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -224,6 +219,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
           <version>${version.maven-shade-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${version.maven-site-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -277,8 +277,23 @@
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
+          <artifactId>mrm-maven-plugin</artifactId>
+          <version>${version.mrm-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>taglist-maven-plugin</artifactId>
+          <version>${version.taglist-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
           <version>${version.versions-maven-plugin}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.sisu</groupId>
+          <artifactId>sisu-maven-plugin</artifactId>
+          <version>${version.sisu-maven-plugin}</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
@@ -301,21 +316,20 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
+        <artifactId>maven-assembly-plugin</artifactId>
         <inherited>false</inherited>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/resources.xml</descriptor>
+          </descriptors>
+        </configuration>
         <executions>
           <execution>
-            <id>enforce-requireMavenVersion</id>
+            <id>make-assembly</id>
             <goals>
-              <goal>enforce</goal>
+              <goal>single</goal>
             </goals>
-            <configuration>
-              <rules>
-                <requireMavenVersion>
-                  <version>3.9.9</version>
-                </requireMavenVersion>
-              </rules>
-            </configuration>
+            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
@@ -326,12 +340,11 @@
         <inherited>false</inherited>
         <executions>
           <execution>
-            <id>copy-basedir-to-metainf</id>
+            <id>copy-to-metainf</id>
             <goals>
               <goal>copy-resources</goal>
             </goals>
             <phase>process-resources</phase>
-            <inherited>false</inherited>
             <configuration>
               <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
               <resources>
@@ -339,7 +352,6 @@
                   <directory>${project.basedir}</directory>
                   <includes>
                     <include>LICENSE</include>
-                    <include>NOTICE</include>
                   </includes>
                 </resource>
               </resources>
@@ -354,7 +366,7 @@
         <inherited>false</inherited>
         <configuration>
           <generateBackupPoms>false</generateBackupPoms>
-          <rulesUri>file://${maven.multiModuleProjectDirectory}/emergent-versions-rules.xml</rulesUri>
+          <rulesUri>file://${maven.multiModuleProjectDirectory}/version-rules.xml</rulesUri>
         </configuration>
       </plugin>
     </plugins>
@@ -386,7 +398,6 @@
               </execution>
             </executions>
           </plugin>
-
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -399,36 +410,6 @@
               </execution>
             </executions>
           </plugin>
-
-          <!--
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <inherited>false</inherited>
-            <configuration>
-              <preparationGoals>clean versions:set-property@resources-version verify</preparationGoals>
-              <completionGoals>versions:set-property@resources-version</completionGoals>
-            </configuration>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>versions-maven-plugin</artifactId>
-            <inherited>false</inherited>
-            <executions>
-              <execution>
-                <id>resources-version</id>
-                <goals>
-                  <goal>set-property</goal>
-                </goals>
-                <configuration>
-                  <property>version.emergent-resources</property>
-                  <newVersion>${project.version}</newVersion>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          -->
         </plugins>
       </build>
     </profile>
@@ -447,6 +428,52 @@
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
             <extensions>true</extensions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>flatten</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>flatten-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>clean</id>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>flatten</id>
+                <goals>
+                  <goal>flatten</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <flattenMode>ossrh</flattenMode>
+                  <updatePomFile>true</updatePomFile>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>/</directory>
+                  <includes>
+                    <include>.flattened-pom.xml</include>
+                  </includes>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+              </filesets>
+            </configuration>
           </plugin>
         </plugins>
       </build>
